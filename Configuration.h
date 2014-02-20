@@ -6,6 +6,7 @@
 #define CONFIGURATION_H_
 
 #include <memory>
+#include <string>
 #include <vector>
 
 // A configuration for a backtracking problem
@@ -23,9 +24,15 @@ class Configuration {
 		// Decide whether this is the long-sought fruit of our endeavers
 		virtual bool is_goal() const = 0;
 
+		// Represent this instance as a string
+		virtual std::string str() const = 0;
+
 	// Disable copy and assign
 	Configuration(const Configuration &tocopy) = delete;
 	Configuration &operator=(const Configuration &toassign) = delete;
 };
+
+// Send a Configuration representation to an output stream
+std::ostream &operator<<(std::ostream &stream, const Configuration &instance);
 
 #endif
