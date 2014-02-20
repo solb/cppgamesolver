@@ -11,8 +11,10 @@ shared_ptr<Configuration> solver(shared_ptr<Configuration> starting) {
 	if(starting->is_goal())
 		return starting;
 
-	for(shared_ptr<Configuration> &next : starting->successors())
-		return solver(next);
+	for(shared_ptr<Configuration> &next : starting->successors()) {
+		shared_ptr<Configuration> future = solver(next);
+		if(future) return future;
+	}
 
 	return nullptr;
 }
