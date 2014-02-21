@@ -25,7 +25,7 @@ class Configuration {
 		virtual bool is_goal() const = 0;
 
 		// Represent this instance as a string
-		virtual operator const std::string() const = 0;
+		virtual operator const std::string &() const = 0;
 
 		// Represent this instance as a string literal
 		operator const char *() const;

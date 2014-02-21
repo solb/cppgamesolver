@@ -15,6 +15,7 @@ class WheelConfig : public Configuration {
 		const std::vector<unsigned> gap_sums_;
 		std::vector<bool> available_spaces_; // coords [0, num_spaces_)
 		std::vector<unsigned> config_; // vals (0, num_spaces_]
+		mutable std::string repr_;
 
 	public:
 		WheelConfig(unsigned num_triads, std::vector<unsigned> &&gap_sums);
@@ -23,7 +24,7 @@ class WheelConfig : public Configuration {
 
 		bool is_goal() const;
 
-		operator const std::string() const;
+		operator const std::string &() const;
 
 	private:
 		WheelConfig(const WheelConfig &predecessor, unsigned next_placed);

@@ -6,5 +6,5 @@
 using std::string;
 
 Configuration::operator const char *() const {
-	return (operator const string)().c_str();
+	return (operator const string &)().c_str();
 }

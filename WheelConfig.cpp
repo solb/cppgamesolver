@@ -3,11 +3,10 @@
 // 03/05/14 Project 1
 
 #include <cassert>
-#include <sstream>
 #include "WheelConfig.h"
 using std::shared_ptr;
 using std::string;
-using std::stringstream;
+using std::to_string;
 using std::vector;
 
 WheelConfig::WheelConfig(unsigned num_triads, vector<unsigned>&& gap_sums) :
@@ -16,7 +15,8 @@ WheelConfig::WheelConfig(unsigned num_triads, vector<unsigned>&& gap_sums) :
 		each_sum_(num_spaces_*(num_spaces_+1)/(2*num_triads_)),
 		gap_sums_(move(gap_sums)),
 		available_spaces_(num_spaces_, true),
-		config_() {}
+		config_(),
+		repr_() {}
 
 // Precondition: next_placed in range, set in available_spaces_, not in config_
 WheelConfig::WheelConfig(const WheelConfig &predecessor, unsigned next_placed) :
@@ -25,7 +25,8 @@ WheelConfig::WheelConfig(const WheelConfig &predecessor, unsigned next_placed) :
 		each_sum_(predecessor.each_sum_),
 		gap_sums_(predecessor.gap_sums_),
 		available_spaces_(predecessor.available_spaces_),
-		config_(predecessor.config_) {
+		config_(predecessor.config_),
+		repr_() {
 	config_.push_back(next_placed);
 	assert(next_placed > 0);
 	assert(next_placed <= num_spaces_);
@@ -78,17 +79,17 @@ bool WheelConfig::is_goal() const {
 	return config_.size() == num_spaces_ && config_.front()+config_.back() == gap_sums_.back();
 }
 
-WheelConfig::operator const string() const {
-	stringstream holding;
+WheelConfig::operator const string &() const {
+	if(!repr_.size()) {
+		for(unsigned index = 0; index < config_.size(); ++index) {
+			if(index%3 == 0)
+				repr_ += (index ? " - " : "");
+			else
+				repr_ += '.';
 
-	for(unsigned index = 0; index < config_.size(); ++index) {
-		if(index%3 == 0)
-			holding << (index ? " - " : "");
-		else
-			holding << '.';
-
-		holding << config_[index];
+			repr_ += to_string(config_[index]);
+		}
 	}
 
-	return holding.str();
+	return repr_;
 }
