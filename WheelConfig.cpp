@@ -75,7 +75,7 @@ vector<shared_ptr<Configuration>> WheelConfig::successors() const {
 }
 
 bool WheelConfig::is_goal() const {
-	return config_.size() == num_spaces_;
+	return config_.size() == num_spaces_ && config_.front()+config_.back() == gap_sums_.back();
 }
 
 string WheelConfig::str() const {
