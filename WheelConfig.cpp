@@ -52,16 +52,18 @@ vector<shared_ptr<Configuration>> WheelConfig::successors() const {
 							new WheelConfig(*this, needed)));
 			}
 			break;
-		case 1: // Placing the middle member of a triad
+		case 1: { // Placing the middle member of a triad
 			// The values of the next two are interdependent to make the sum
-			for(unsigned possible = each_sum_-num_spaces_-config_.back();
-					possible < each_sum_-config_.back()-possible; ++possible) {
+			unsigned possible = each_sum_-config_.back();
+			for(possible = (possible > num_spaces_ ? possible-num_spaces_ : 1);
+					possible*2 < each_sum_-config_.back(); ++possible) {
 				if(available_spaces_[possible-1] &&
 						available_spaces_[each_sum_-config_.back()-possible-1])
 					descendents.push_back(shared_ptr<Configuration>(
 							new WheelConfig(*this, possible)));
 			}
 			break;
+		}
 		default: // Placing the last member to complete a triad
 			// We already confirmed that this is going to fit
 			descendents.push_back(shared_ptr<Configuration>(
