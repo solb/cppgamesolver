@@ -9,13 +9,14 @@ using std::string;
 using std::to_string;
 using std::vector;
 
-WheelConfig::WheelConfig(unsigned num_triads, vector<unsigned>&& gap_sums) :
+WheelConfig::WheelConfig(unsigned num_triads, vector<unsigned>&& gap_sums,
+				vector<unsigned> &&config) :
 		num_triads_(num_triads),
 		num_spaces_(num_triads_*3),
 		each_sum_(num_spaces_*(num_spaces_+1)/(2*num_triads_)),
 		gap_sums_(move(gap_sums)),
 		available_spaces_(num_spaces_, true),
-		config_(),
+		config_(config),
 		repr_() {}
 
 // Precondition: next_placed in range, set in available_spaces_, not in config_

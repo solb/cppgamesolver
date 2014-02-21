@@ -18,7 +18,7 @@ class WheelConfig : public Configuration {
 		mutable std::string repr_;
 
 	public:
-		WheelConfig(unsigned num_triads, std::vector<unsigned> &&gap_sums);
+		WheelConfig(unsigned num_triads, std::vector<unsigned> &&gap_sums, std::vector<unsigned> &&config = std::vector<unsigned>());
 
 		std::vector<std::shared_ptr<Configuration>> successors() const;
 

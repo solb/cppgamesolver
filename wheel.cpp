@@ -19,8 +19,20 @@ int main() {
 	for(unsigned &sum : connector_sums)
 		cin >> sum;
 
+	vector<unsigned> starting_config;
+	do {
+		size_t ind;
+		unsigned val;
+		cin >> ind;
+		cin >> val;
+		if(!cin.eof())
+			starting_config.insert(starting_config.begin()+ind, val);
+	}
+	while(!cin.eof());
+
 	shared_ptr<Configuration> puzzle_state = shared_ptr<Configuration>(
-			new WheelConfig(triads_count, move(connector_sums)));
+			new WheelConfig(triads_count, move(connector_sums),
+					move(starting_config)));
 	puzzle_state = solver(puzzle_state);
 
 	cout << (puzzle_state ? *puzzle_state : "No solution!") << endl;
