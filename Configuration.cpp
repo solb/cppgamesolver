@@ -3,8 +3,8 @@
 // 03/05/14 Project 1
 
 #include "Configuration.h"
-using std::ostream;
+using std::string;
 
-ostream &operator<<(std::ostream &stream, const Configuration &instance) {
-	return stream << instance.str();
+Configuration::operator const char *() const {
+	return (operator const string)().c_str();
 }

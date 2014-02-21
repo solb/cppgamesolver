@@ -23,8 +23,5 @@ int main() {
 			new WheelConfig(triads_count, move(connector_sums)));
 	puzzle_state = solver(puzzle_state);
 
-	if(puzzle_state)
-		cout << *puzzle_state << endl;
-	else
-		cout << "No solution!" << endl;
+	cout << (puzzle_state ? *puzzle_state : "No solution!") << endl;
 }

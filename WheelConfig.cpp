@@ -78,7 +78,7 @@ bool WheelConfig::is_goal() const {
 	return config_.size() == num_spaces_ && config_.front()+config_.back() == gap_sums_.back();
 }
 
-string WheelConfig::str() const {
+WheelConfig::operator const string() const {
 	stringstream holding;
 
 	for(unsigned index = 0; index < config_.size(); ++index) {

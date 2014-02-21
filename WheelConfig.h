@@ -23,7 +23,7 @@ class WheelConfig : public Configuration {
 
 		bool is_goal() const;
 
-		std::string str() const;
+		operator const std::string() const;
 
 	private:
 		WheelConfig(const WheelConfig &predecessor, unsigned next_placed);

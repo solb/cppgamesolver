@@ -25,14 +25,14 @@ class Configuration {
 		virtual bool is_goal() const = 0;
 
 		// Represent this instance as a string
-		virtual std::string str() const = 0;
+		virtual operator const std::string() const = 0;
+
+		// Represent this instance as a string literal
+		operator const char *() const;
 
 	// Disable copy and assign
 	Configuration(const Configuration &tocopy) = delete;
 	Configuration &operator=(const Configuration &toassign) = delete;
 };
-
-// Send a Configuration representation to an output stream
-std::ostream &operator<<(std::ostream &stream, const Configuration &instance);
 
 #endif
