@@ -3,6 +3,7 @@
 // 03/05/14 Project 1
 
 #include "Configuration.h"
+#include "solver.h"
 using std::shared_ptr;
 using std::vector;
 

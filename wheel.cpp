@@ -8,6 +8,7 @@
 using std::cin;
 using std::cout;
 using std::endl;
+using std::make_shared;
 using std::shared_ptr;
 using std::vector;
 
@@ -33,9 +34,9 @@ int main() {
 	}
 	while(!cin.eof());
 
-	shared_ptr<Configuration> puzzle_state = shared_ptr<Configuration>(
-			new WheelConfig(triads_count, move(connector_sums),
-					move(starting_config)));
+	shared_ptr<Configuration> puzzle_state =
+			make_shared<WheelConfig>(triads_count,
+					move(connector_sums), move(starting_config));
 	puzzle_state = solver(puzzle_state);
 
 	cout << (puzzle_state ? *puzzle_state : "No solution!") << endl;
