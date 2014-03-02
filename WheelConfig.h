@@ -23,6 +23,8 @@ class WheelConfig : public Configuration {
 
 		std::vector<std::shared_ptr<Configuration>> successors() const;
 
+		bool is_nonempty() const;
+
 		bool is_goal() const;
 
 		operator const std::string &() const;

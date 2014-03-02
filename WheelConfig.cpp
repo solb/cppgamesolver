@@ -97,6 +97,10 @@ vector<shared_ptr<Configuration>> WheelConfig::successors() const {
 	return descendents;
 }
 
+bool WheelConfig::is_nonempty() const {
+	return config_.size();
+}
+
 bool WheelConfig::is_goal() const {
 	return config_.size() == num_spaces_ &&
 			!count(config_.begin(), config_.end(), 0) &&

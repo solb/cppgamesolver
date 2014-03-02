@@ -21,6 +21,9 @@ class Configuration {
 		// Return all this instance's *valid* successors
 		virtual std::vector<std::shared_ptr<Configuration>> successors() const = 0;
 
+		// Reveal whether this is a non-empty (non-initial) state
+		virtual bool is_nonempty() const = 0;
+
 		// Decide whether this is the long-sought fruit of our endeavers
 		virtual bool is_goal() const = 0;
 
