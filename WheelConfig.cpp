@@ -109,13 +109,13 @@ bool WheelConfig::is_goal() const {
 
 WheelConfig::operator const string &() const {
 	if(!repr_.size()) {
-		for(unsigned index = 0; index < config_.size(); ++index) {
+		for(unsigned index = 0; index < num_spaces_; ++index) {
 			if(index%3 == 0)
 				repr_ += (index ? " - " : "");
 			else
 				repr_ += '.';
 
-			repr_ += to_string(config_[index]);
+			repr_ += index < config_.size() ? to_string(config_[index]) : "0";
 		}
 	}
 
