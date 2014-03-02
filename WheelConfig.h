@@ -15,6 +15,7 @@ class WheelConfig : public Configuration {
 		const std::vector<unsigned> gap_sums_;
 		std::vector<bool> available_spaces_; // coords [0, num_spaces_)
 		std::vector<unsigned> config_; // vals (0, num_spaces_]
+		unsigned to_place_;
 		mutable std::string repr_;
 
 	public:

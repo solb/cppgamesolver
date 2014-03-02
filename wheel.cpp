@@ -25,8 +25,11 @@ int main() {
 		unsigned val;
 		cin >> ind;
 		cin >> val;
-		if(!cin.eof())
-			starting_config.insert(starting_config.begin()+ind, val);
+		if(!cin.eof()) {
+			if(ind >= starting_config.size())
+				starting_config.resize(ind+1);
+			starting_config[ind] = val;
+		}
 	}
 	while(!cin.eof());
 
