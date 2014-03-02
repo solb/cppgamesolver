@@ -5,9 +5,11 @@
 #ifndef SOLVER_H_
 #define SOLVER_H_
 
+#include <forward_list>
 #include <memory>
 class Configuration;
 
-std::shared_ptr<Configuration> solver(std::shared_ptr<Configuration> starting);
+std::shared_ptr<Configuration> solver(std::shared_ptr<Configuration> starting,
+		std::shared_ptr<std::forward_list<std::shared_ptr<Configuration>>> log = nullptr);
 
 #endif
