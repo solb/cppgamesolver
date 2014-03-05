@@ -16,6 +16,7 @@ using std::shared_ptr;
 using std::vector;
 
 int main(int argc, char *argv[]) {
+	// Process command-line argument(s)
 	bool pathMode = false;
 	if(argc > 1) {
 		if(argc == 2 && !strcmp(argv[1], "path"))
@@ -33,13 +34,14 @@ int main(int argc, char *argv[]) {
 	for(unsigned &sum : connector_sums)
 		cin >> sum;
 
+	// Collect optional input
 	vector<unsigned> starting_config;
 	do {
 		size_t ind;
 		unsigned val;
 		cin >> ind;
 		cin >> val;
-		if(!cin.eof()) {
+		if(cin) {
 			if(ind >= starting_config.size())
 				starting_config.resize(ind+1);
 			starting_config[ind] = val;
@@ -47,16 +49,20 @@ int main(int argc, char *argv[]) {
 	}
 	while(!cin.eof());
 
+	// Space for our solution and descent path
 	shared_ptr<Configuration> puzzle_state =
 			make_shared<WheelConfig>(triads_count,
 					move(connector_sums), move(starting_config));
 	shared_ptr<forward_list<shared_ptr<Configuration>>> puzzle_hist =
 			make_shared<forward_list<shared_ptr<Configuration>>>();
 
+	// Solve the puzzle
 	puzzle_state = pathMode ?
 			solver(puzzle_state, puzzle_hist) : solver(puzzle_state);
 
+	// Print out solution path if we generated one
 	for(shared_ptr<Configuration> snapshot : *puzzle_hist)
 		cout << *snapshot << endl;
+	// Is that your final answer?
 	cout << (puzzle_state ? *puzzle_state : "No solution!") << endl;
 }

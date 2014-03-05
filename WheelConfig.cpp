@@ -17,10 +17,13 @@ WheelConfig::WheelConfig(unsigned num_triads, vector<unsigned>&& gap_sums,
 		num_spaces_(num_triads_*3),
 		each_sum_(num_spaces_*(num_spaces_+1)/(2*num_triads_)),
 		gap_sums_(move(gap_sums)),
+		// Everyone's available unless he changes his profile status
 		available_spaces_(num_spaces_, true),
 		config_(config),
+		// The first zero (or the end of the list) is our first target
 		to_place_(find(config.begin(), config.end(), 0)-config.begin()),
 		repr_() {
+	// Mark off all nonzero numbers
 	for(unsigned used : config) {
 		if(used)
 			available_spaces_[used-1] = false;
@@ -35,13 +38,16 @@ WheelConfig::WheelConfig(const WheelConfig &predecessor, unsigned next_placed) :
 		gap_sums_(predecessor.gap_sums_),
 		available_spaces_(predecessor.available_spaces_),
 		config_(predecessor.config_),
+		// Find the first zero once again
 		to_place_(find(predecessor.config_.begin()+predecessor.to_place_+1,
 				predecessor.config_.end(), 0)-predecessor.config_.begin()),
 		repr_() {
+	// Make room at the end of the list if there are no zeros
 	if(predecessor.to_place_ >= config_.size()) {
 		config_.resize(predecessor.to_place_+1);
 		to_place_ = config_.size();
 	}
+	// Place next_placed in the appointed spot
 	config_[predecessor.to_place_] = next_placed;
 	assert(next_placed > 0);
 	assert(next_placed <= num_spaces_);
@@ -72,12 +78,16 @@ vector<shared_ptr<Configuration>> WheelConfig::successors() const {
 			}
 			break;
 		case 1: { // Placing the middle member of a triad
-			// The values of the next two are interdependent to make the sum
+			// The next two values we select must add up to this
 			unsigned sum = each_sum_-config_[to_place_-1];
+			// The biggest one we could place is this
 			unsigned max = sum > num_spaces_ ? num_spaces_ : sum-1;
+			// Knowing that, let's try the smallest one first
 			for(unsigned possible = sum-max; possible <= max; ++possible) {
+				// But we don't want to place the *same* value twice!
 				if(possible*2 == sum)
 					continue;
+				// Can we fit it, and will it work with whatever already follows
 				if(available_spaces_[possible-1] &&
 						(available_spaces_[sum-possible-1] ||
 								(to_place_+1 < config_.size() &&
@@ -102,6 +112,7 @@ bool WheelConfig::is_nonempty() const {
 }
 
 bool WheelConfig::is_goal() const {
+	// It's gotta be full and contain no unknowns
 	return config_.size() == num_spaces_ &&
 			!count(config_.begin(), config_.end(), 0) &&
 			config_.front()+config_.back() == gap_sums_.back();

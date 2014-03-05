@@ -27,10 +27,10 @@ class Configuration {
 		// Decide whether this is the long-sought fruit of our endeavers
 		virtual bool is_goal() const = 0;
 
-		// Represent this instance as a string
+		// Represent this instance as a string, valid as long as this object is
 		virtual operator const std::string &() const = 0;
 
-		// Represent this instance as a string literal
+		// Represent this instance as a string literal, valid until destruction
 		operator const char *() const;
 
 	// Disable copy and assign

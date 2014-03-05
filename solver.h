@@ -9,6 +9,7 @@
 #include <memory>
 class Configuration;
 
+// A backtracking solver
 std::shared_ptr<Configuration> solver(std::shared_ptr<Configuration> starting,
 		std::shared_ptr<std::forward_list<std::shared_ptr<Configuration>>> log = nullptr);
 
