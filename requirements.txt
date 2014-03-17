@@ -1,0 +1,60 @@
+Tutorial
+========
+Black Box is a laser game played on a board bordered by laser emitters and
+containing some number of strange "black box" devices at unknown coordinates.
+When each laser is turned on, it fires a laser beam straight outward.  If
+unhindered, this will be detected by circuitry in the emitter directly across
+the board.  However, when a laser beam interacts with one of the mysterious
+devices, its path is modified according to the following rules:
+ - If a laser beam hits a device head-on, it is absorbed and never reaches the
+   emitters around the perimeter.  This is considered a HIT.
+ - If a laser beam enters the space diagnally in front and to the right of a
+   device, it is reflected ninety degrees to the right.
+ - Similarly, if a laser beam enters the space diagnally in front and to the
+   left of a device, it is reflected ninety degrees to the left.
+ - If a laser beam enters the space diagnally in front of two devices, it is
+   reflected back in the direction from which it came.  Any laser that
+   re-enters the same emitter that produced it is counted as a REFLECTION.
+ - If a laser beam is reflected at all prior to entering the field (i.e.
+   before exiting its emitter) is also counted as a REFLECTION.
+The goal of the game is to correctly guess the coordinates of each "black box"
+using the information revealed by the lasers.  There is no cost associated
+with firing each laser (or all of them, for that matter).
+
+Invocation
+==========
+$ ./blackbox [path]
+where path is the (optional) literal string "path"
+The input file is provided on standard input.
+
+Input file format
+=================
+n s
+t_1 ... t_s
+r_1 ... r_s
+b_1 ... b_s
+l_1 ... l_s
+...
+
+n is the number of "black box" devices
+s is the side length of the square board
+t_1 through t_s are the (space-separated) labels of the top edge emitters
+r_1--r_s are the right edge, b_1--b_s the bottom, and l_1--l_s the left
+These emitters are indexed clockwise around the perimiter of the board.
+Each emitter indicates the outcome of firing its bean, as follows:
+ - positive integer: the beam fired from this emitter terminated at the one
+   with the same numeric identifier
+ - literal 'h': the beam fired from this emitter was absorbed (a HIT)
+ - literal 'r': the beam fired from this emitter returned (a REFLECTION)
+All this is followed by at most n lines of space-separated device coordinates.
+   (e.g. 0 1 means 0 spaces from the left, 1 from the top)
+
+Output file format
+==================
+n	t_1 ...	t_s
+l_s	'		'	r_1
+...	'		'	...
+l_1	'		'	r_s
+	b_s ...	b_1
+where each ' represents an empty location and an * indicates a "black box."
+Each column is separated by a tab character.
