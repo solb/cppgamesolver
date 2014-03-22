@@ -27,9 +27,9 @@ with firing each laser (or all of them, for that matter).
 
 Invocation
 ==========
-$ ./blackbox [path]
+$ ./blackbox [path] <input>
 where path is the (optional) literal string "path"
-The input file is provided on standard input.
+and input is the (mandatory) path to an input file
 
 Input file format
 =================
