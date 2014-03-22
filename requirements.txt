@@ -1,3 +1,7 @@
+Sol Boucher
+CSCI-541-01 Strout's F(ant)abulous C++11 Concoction
+03/22/14 Project 2 Requirements
+
 Tutorial
 ========
 Black Box is a laser game played on a board bordered by laser emitters and
