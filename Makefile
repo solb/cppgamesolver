@@ -1,4 +1,4 @@
-BIN := wheel
+BINS := wheel blackbox
 CPPFLAGS := -std=c++11
 CXXFLAGS := -pedantic -Wall -Wextra -Weffc++
 
@@ -7,16 +7,16 @@ ifdef OBJS
 	include objs.mk
 endif
 
-objs.mk: cxxs := $(wildcard *.cpp)
+objs.mk: cxxs := $(filter-out $(foreach bin,${BINS},${bin}.cpp),$(wildcard *.cpp))
 objs.mk:
 	$(eval OBJS := $(subst .cpp,.o,${cxxs}))
-	echo "OBJS := ${OBJS}" > objs.mk
-	echo "${BIN}: CC := ${CXX}" >> objs.mk
-	echo "${BIN}: ${OBJS}" >> objs.mk
+	$(shell echo "all: ${BINS}" > objs.mk)
+	$(foreach bin,${BINS},$(shell echo "${bin}: ${OBJS}" >> objs.mk))
 	${CXX} ${CPPFLAGS} -MM ${cxxs} >> objs.mk
+	echo "OBJS := ${OBJS}" >> objs.mk
 	${MAKE}
 
 clean:
 	rm -f ${OBJS}
 wipe: clean
-	rm -f ${BIN} objs.mk
+	rm -f ${BINS} objs.mk
