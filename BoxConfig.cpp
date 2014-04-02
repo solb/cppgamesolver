@@ -36,15 +36,14 @@ bool BoxConfig::is_goal() const {
 BoxConfig::operator const string &() const {
 	if(!repr_.size()) {
 		repr_ += to_string(num_devices_);
-		for(char label : edge_labels_[TOP_EDGE]) {
+		for(char label : edge_labels_[TOP_EDGE])
 			repr_ += '\t' + represent_label(label);
-		}
 		repr_ += '\n';
 
 		for(vector<char>::size_type line = 0;
 				line < edge_labels_[RIGHT_EDGE].size(); ++line) {
 			repr_ += represent_label(edge_labels_
-					[LEFT_EDGE][edge_labels_[LEFT_EDGE].size() - line - 1]);
+					[LEFT_EDGE][line]);
 			for(bool entry : board_[line]) {
 				repr_ += '\t';
 				repr_ += entry ? REPR_DEVC : REPR_EMPT;
@@ -53,10 +52,8 @@ BoxConfig::operator const string &() const {
 					'\n';
 		}
 
-		for(vector<char>::size_type index =
-				edge_labels_[BOTTOM_EDGE].size(); index > 0; --index)
-			repr_ += '\t' +
-					represent_label(edge_labels_[BOTTOM_EDGE][index - 1]);
+		for(char label : edge_labels_[BOTTOM_EDGE])
+			repr_ += '\t' + represent_label(label);
 	}
 
 	return repr_;
