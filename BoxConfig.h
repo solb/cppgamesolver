@@ -56,6 +56,9 @@ class BoxConfig : public Configuration {
 		operator const std::string &() const;
 
 	private:
+		// Start tracing from the spots on the border, returning whether valid
+		bool is_valid() const;
+
 		// Returns a string representation of an edge label, which is a
 		// character if the label is a sentinel value, and numeric otherwise
 		static std::string represent_label(char label);

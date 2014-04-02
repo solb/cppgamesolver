@@ -3,8 +3,11 @@
 // 04/09/14 Project 2
 
 #include "BoxConfig.h"
+#include <algorithm>
+#include <iostream> // TODO remove
 using std::shared_ptr;
 using std::string;
+using std::swap;
 using std::to_string;
 using std::vector;
 
@@ -57,6 +60,32 @@ BoxConfig::operator const string &() const {
 	}
 
 	return repr_;
+}
+
+bool BoxConfig::is_valid() const {
+	vector<vector<bool>>::size_type r = -1;
+	vector<vector<bool>>::size_type c = 0;
+	vector<vector<bool>>::size_type dr = 1;
+	vector<vector<bool>>::size_type dc = 0;
+	for(vector<vector<char>>::size_type edge = 0; edge < edge_labels_.size();
+			++edge) {
+		vector<vector<bool>>::size_type &change = edge%2 ? r : c;
+		for(; change < edge_labels_[edge].size(); ++change)
+			// TODO: actually trace from this "location"
+			std::cout << "row=" << r << " col=" << c << std::endl;
+
+		r = 0;
+		c = 0;
+		change = edge/2 ? -1 : edge_labels_[edge + 1].size();
+
+		if(edge%2) {
+			dr = -dr;
+			dc = -dc;
+		}
+		swap(dr, dc);
+	}
+
+	// TODO return whether it was actually valid
 }
 
 string BoxConfig::represent_label(char label) {
