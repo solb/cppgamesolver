@@ -17,19 +17,19 @@ class BoxConfig : public Configuration {
 		static const char REFL_CHAR = 'r';
 
 		// The indices of the edge labels for a given side of the board
-		static const std::vector<std::vector<unsigned>>::size_type TOP_EDGE = 0;
-		static const std::vector<std::vector<unsigned>>::size_type RIGHT_EDGE =
+		static const std::vector<std::vector<char>>::size_type TOP_EDGE = 0;
+		static const std::vector<std::vector<char>>::size_type RIGHT_EDGE =
 				1;
-		static const std::vector<std::vector<unsigned>>::size_type BOTTOM_EDGE =
+		static const std::vector<std::vector<char>>::size_type BOTTOM_EDGE =
 				2;
-		static const std::vector<std::vector<unsigned>>::size_type LEFT_EDGE =
+		static const std::vector<std::vector<char>>::size_type LEFT_EDGE =
 				3;
 
 		// Number of "black box" devices that need to be placed
 		const unsigned num_devices_;
 
 		// Edge labels (for the board border described by the *_EDGE constants)
-		const std::vector<std::vector<unsigned>> edge_labels_;
+		const std::vector<std::vector<char>> edge_labels_;
 
 		// Play board, where each true represents a mysterious device
 		std::vector<std::vector<bool>> board_;
@@ -39,7 +39,7 @@ class BoxConfig : public Configuration {
 
 	public:
 		BoxConfig(unsigned num_devices,
-				std::vector<std::vector<unsigned>> &&edge_labels);
+				std::vector<std::vector<char>> &&edge_labels);
 
 		std::vector<std::shared_ptr<Configuration>> successors() const;
 
@@ -52,7 +52,7 @@ class BoxConfig : public Configuration {
 	private:
 		// Returns a string representation of an edge label, which is a
 		// character if the label is a sentinel value, and numeric otherwise
-		static std::string represent_label(unsigned label);
+		static std::string represent_label(char label);
 };
 
 #endif

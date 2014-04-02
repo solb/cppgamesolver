@@ -68,16 +68,16 @@ int main(int argc, char *argv[]) {
 	vector<vector<char>> edges(4);
 	for(vector<vector<char>>::size_type edge = 0; edge < 4; ++edge)
 		for(unsigned count = 0; count < side_len; ++count) {
-			unsigned edge;
-			*ins >> edge;
-			edges[edge].push_back(edge);
+			ins->ignore(numeric_limits<streamsize>::max(), '\n');
+			if(isdigit(ins->peek())) {
+				short label;
+				*ins >> label;
+				edges[edge].push_back(label);
+			}
+			else { // It's a character
+				char label;
+				*ins >> label;
+				edges[edge].push_back(label);
+			}
 		}
-
-	for(vector<unsigned> &group : edges) {
-		for(unsigned element : group)
-			cout << element << ' ';
-		cout << endl;
-	}
-
-	// TODO: we'll need constants for the character codes of 'h' and 'r'
 }

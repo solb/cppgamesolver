@@ -9,7 +9,7 @@ using std::to_string;
 using std::vector;
 
 BoxConfig::BoxConfig(unsigned num_devices,
-			vector<vector<unsigned>> &&edge_labels) :
+			vector<vector<char>> &&edge_labels) :
 		num_devices_(num_devices),
 		edge_labels_(move(edge_labels)),
 		board_(edge_labels_[RIGHT_EDGE].size()),
@@ -36,7 +36,7 @@ bool BoxConfig::is_goal() const {
 BoxConfig::operator const string &() const {
 	if(!repr_.size()) {
 		repr_ += to_string(num_devices_);
-		for(unsigned label : edge_labels_[TOP_EDGE]) {
+		for(char label : edge_labels_[TOP_EDGE]) {
 			repr_ += '\t' + represent_label(label);
 		}
 	}
@@ -44,7 +44,7 @@ BoxConfig::operator const string &() const {
 	return repr_;
 }
 
-string BoxConfig::represent_label(unsigned label) {
+string BoxConfig::represent_label(char label) {
 	if(label == HIT_CHAR || label == REFL_CHAR)
 		return {label};
 	else
