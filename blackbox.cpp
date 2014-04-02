@@ -2,9 +2,12 @@
 // CSCI-541-01 Strout's F(ant)abulous C++11 Concoction
 // 04/09/14 Project 2
 
+#include "BoxConfig.h"
+#include <cctype>
 #include <cstring>
 #include <iostream>
 #include <fstream>
+#include <limits>
 #include <memory>
 #include <vector>
 using std::cin;
@@ -13,6 +16,8 @@ using std::cout;
 using std::endl;
 using std::istream;
 using std::ifstream;
+using std::numeric_limits;
+using std::streamsize;
 using std::unique_ptr;
 using std::vector;
 
@@ -42,7 +47,8 @@ int main(int argc, char *argv[]) {
 	if(!strcmp(argv[argc - 1], SYMB_STDIN))
 		ins = &cin;
 	else {
-		ins = new ifstream(argv[argc - 1]);
+		fdesc.reset(new ifstream(argv[argc - 1]));
+		ins = fdesc.get();
 		if(!fdesc->is_open()) {
 			cerr << "Failed to open input file: " << argv[argc - 1] << endl;
 			return 1;
@@ -59,8 +65,8 @@ int main(int argc, char *argv[]) {
 	}
 
 	// Collect the side labels: top, right, bottom, left
-	vector<vector<unsigned>> edges;
-	for(int edge = 0; edge < 3; ++edge)
+	vector<vector<char>> edges(4);
+	for(vector<vector<char>>::size_type edge = 0; edge < 4; ++edge)
 		for(unsigned count = 0; count < side_len; ++count) {
 			unsigned edge;
 			*ins >> edge;
