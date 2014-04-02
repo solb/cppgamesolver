@@ -16,6 +16,12 @@ class BoxConfig : public Configuration {
 		// The edge label sentinel character indicating a reflection
 		static const char REFL_CHAR = 'r';
 
+		// Representation of an empty spot in the grid
+		static const char REPR_EMPT = '\'';
+
+		// Representation of a device in the grid
+		static const char REPR_DEVC = '*';
+
 		// The indices of the edge labels for a given side of the board
 		static const std::vector<std::vector<char>>::size_type TOP_EDGE = 0;
 		static const std::vector<std::vector<char>>::size_type RIGHT_EDGE =

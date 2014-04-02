@@ -15,7 +15,7 @@ BoxConfig::BoxConfig(unsigned num_devices,
 		board_(edge_labels_[RIGHT_EDGE].size()),
 		repr_() {
 	for(vector<bool> &column : board_)
-		column.resize(edge_labels[TOP_EDGE].size());
+		column.resize(edge_labels_[TOP_EDGE].size());
 }
 
 vector<shared_ptr<Configuration>> BoxConfig::successors() const {
@@ -39,6 +39,24 @@ BoxConfig::operator const string &() const {
 		for(char label : edge_labels_[TOP_EDGE]) {
 			repr_ += '\t' + represent_label(label);
 		}
+		repr_ += '\n';
+
+		for(vector<char>::size_type line = 0;
+				line < edge_labels_[RIGHT_EDGE].size(); ++line) {
+			repr_ += represent_label(edge_labels_
+					[LEFT_EDGE][edge_labels_[LEFT_EDGE].size() - line - 1]);
+			for(bool entry : board_[line]) {
+				repr_ += '\t';
+				repr_ += entry ? REPR_DEVC : REPR_EMPT;
+			}
+			repr_ += '\t' + represent_label(edge_labels_[RIGHT_EDGE][line]) +
+					'\n';
+		}
+
+		for(vector<char>::size_type index =
+				edge_labels_[BOTTOM_EDGE].size(); index > 0; --index)
+			repr_ += '\t' +
+					represent_label(edge_labels_[BOTTOM_EDGE][index - 1]);
 	}
 
 	return repr_;
