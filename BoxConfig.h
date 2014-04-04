@@ -59,6 +59,18 @@ class BoxConfig : public Configuration {
 		// Start tracing from the spots on the border, returning whether valid
 		bool is_valid() const;
 
+		// Trace from a specific spot on the border, returning whether the
+		// labels on the two ends of the laser match
+		bool trace_from_label(char edge_label,
+				std::vector<std::vector<bool>>::size_type r,
+				std::vector<std::vector<bool>>::size_type c,
+				std::vector<std::vector<bool>>::size_type dr,
+				std::vector<std::vector<bool>>::size_type dc) const;
+
+		// Manipulate row/column deltas to reflect a CW or CCW rotation
+		static void rotate_deltas(std::vector<std::vector<bool>>::size_type &dr,
+				std::vector<std::vector<bool>>::size_type &dc, bool ccw);
+
 		// Returns a string representation of an edge label, which is a
 		// character if the label is a sentinel value, and numeric otherwise
 		static std::string represent_label(char label);

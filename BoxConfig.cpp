@@ -70,9 +70,11 @@ bool BoxConfig::is_valid() const {
 	for(vector<vector<char>>::size_type edge = 0; edge < edge_labels_.size();
 			++edge) {
 		vector<vector<bool>>::size_type &change = edge%2 ? r : c;
-		for(; change < edge_labels_[edge].size(); ++change)
-			// TODO: actually trace from this "location"
-			std::cout << "row=" << r << " col=" << c << std::endl;
+		for(; change < edge_labels_[edge].size(); ++change) {
+			if(!trace_from_label(edge_labels_[edge][change], r, c, dr, dc))
+				return false;
+			std::cout << "row=" << r << " col=" << c << std::endl; // TODO remove
+		}
 
 		r = 0;
 		c = 0;
@@ -85,7 +87,60 @@ bool BoxConfig::is_valid() const {
 		swap(dr, dc);
 	}
 
-	// TODO return whether it was actually valid
+	return true;
+}
+
+bool BoxConfig::trace_from_label(char edge_label,
+		vector<vector<bool>>::size_type r, vector<vector<bool>>::size_type c,
+		vector<vector<bool>>::size_type dr,
+		vector<vector<bool>>::size_type dc) const {
+	vector<vector<bool>>::size_type next_r = r + dr;
+	vector<vector<bool>>::size_type next_c = c + dc;
+
+	// We've hit another edge
+	if(r >= board_.size())
+		return edge_label ==
+				edge_labels_[r == board_.size() ? BOTTOM_EDGE : TOP_EDGE][c];
+	else if(c >= board_.size())
+		return edge_label ==
+				edge_labels_[c == board_[r].size() ? RIGHT_EDGE : LEFT_EDGE][r];
+
+	// We're about to run into one of the devices
+	if(next_r < board_.size() && next_c < board_[next_r].size() &&
+			board_[next_r][next_c])
+		// We expect a hit
+		return edge_label == HIT_CHAR;
+
+	// Is there a device diagonally in front of us on either side?
+	bool left, right;
+	if(dr) {
+		left = next_c + dc < board_.size() && board_[next_r][next_c + dc];
+		right = next_c - dc < board_.size() && board_[next_r][next_c - dc];
+	}
+	else {
+		left = next_r - dr < board_.size() && board_[next_r - dr][next_c];
+		right = next_r + dr < board_.size() && board_[next_r + dr][next_c];
+	}
+
+	// We're about to drive *between* two boxes
+	if(left && right)
+		// We expect a reflection
+		return edge_label == REFL_CHAR;
+	else if(left || right) {
+		rotate_deltas(dr, dc, right);
+		next_r = r + dr;
+		next_c = c + dc;
+	}
+	return trace_from_label(edge_label, next_r, next_c, dr, dc);
+}
+
+void BoxConfig::rotate_deltas(vector<vector<bool>>::size_type &dr,
+		vector<vector<bool>>::size_type &dc, bool ccw) {
+	if((!ccw && dr) || (ccw && dc)) {
+		dr = -dr;
+		dc = -dc;
+	}
+	swap(dr, dc);
 }
 
 string BoxConfig::represent_label(char label) {
