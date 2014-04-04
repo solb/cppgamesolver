@@ -7,7 +7,6 @@
 #include <cstring>
 #include <iostream>
 #include <fstream>
-#include <limits>
 #include <memory>
 #include <vector>
 using std::cin;
@@ -16,8 +15,6 @@ using std::cout;
 using std::endl;
 using std::istream;
 using std::ifstream;
-using std::numeric_limits;
-using std::streamsize;
 using std::unique_ptr;
 using std::vector;
 
@@ -68,7 +65,7 @@ int main(int argc, char *argv[]) {
 	vector<vector<char>> edges(4);
 	for(vector<vector<char>>::size_type edge = 0; edge < 4; ++edge)
 		for(unsigned count = 0; count < side_len; ++count) {
-			ins->ignore(numeric_limits<streamsize>::max(), '\n');
+			while(isspace(ins->peek())) ins->get();
 			if(isdigit(ins->peek())) {
 				short label;
 				*ins >> label;
