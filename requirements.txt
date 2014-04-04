@@ -56,9 +56,9 @@ All this is followed by at most n lines of space-separated device coordinates.
 Output file format
 ==================
 n	t_1 ...	t_s
-l_s	'		'	r_1
+l_1	'		'	r_1
 ...	'		'	...
-l_1	'		'	r_s
-	b_s ...	b_1
+l_s	'		'	r_s
+	b_1 ...	b_s
 where each ' represents an empty location and an * indicates a "black box."
 Each column is separated by a tab character.
