@@ -19,6 +19,14 @@ BoxConfig::BoxConfig(unsigned num_devices,
 		repr_() {
 	for(vector<bool> &column : board_)
 		column.resize(edge_labels_[TOP_EDGE].size());
+
+	unsigned added = 0;
+	for(vector<bool> &row : board_)
+		for(vector<bool>::size_type col = 0; col < row.size(); ++col) {
+			if(added++ >= num_devices_)
+				return;
+			row[col] = true;
+		}
 }
 
 vector<shared_ptr<Configuration>> BoxConfig::successors() const {
@@ -80,7 +88,7 @@ bool BoxConfig::is_valid() const {
 		c = 0;
 		change = edge/2 ? -1 : edge_labels_[edge + 1].size();
 
-		if(edge%2) {
+		if(edge%2 == 0) {
 			dr = -dr;
 			dc = -dc;
 		}
