@@ -97,14 +97,6 @@ bool BoxConfig::trace_from_label(char edge_label,
 	vector<vector<bool>>::size_type next_r = r + dr;
 	vector<vector<bool>>::size_type next_c = c + dc;
 
-	// We've hit another edge
-	if(r >= board_.size())
-		return edge_label ==
-				edge_labels_[r == board_.size() ? BOTTOM_EDGE : TOP_EDGE][c];
-	else if(c >= board_.size())
-		return edge_label ==
-				edge_labels_[c == board_[r].size() ? RIGHT_EDGE : LEFT_EDGE][r];
-
 	// We're about to run into one of the devices
 	if(next_r < board_.size() && next_c < board_[next_r].size() &&
 			board_[next_r][next_c])
@@ -112,25 +104,42 @@ bool BoxConfig::trace_from_label(char edge_label,
 		return edge_label == HIT_CHAR;
 
 	// Is there a device diagonally in front of us on either side?
-	bool left, right;
+	bool left = false, right = false;
 	if(dr) {
-		left = next_c + dc < board_.size() && board_[next_r][next_c + dc];
-		right = next_c - dc < board_.size() && board_[next_r][next_c - dc];
+		if(next_r < board_.size()) {
+			left = next_c + dc < board_.size() && board_[next_r][next_c + dc];
+			right = next_c - dc < board_.size() && board_[next_r][next_c - dc];
+		}
 	}
 	else {
-		left = next_r - dr < board_.size() && board_[next_r - dr][next_c];
-		right = next_r + dr < board_.size() && board_[next_r + dr][next_c];
+		if(next_c < board_.size()) {
+			left = next_r - dr < board_.size() && board_[next_r - dr][next_c];
+			right = next_r + dr < board_.size() && board_[next_r + dr][next_c];
+		}
 	}
 
-	// We're about to drive *between* two boxes
+	// We're about to drive *between* two boxes: turn back now!
 	if(left && right)
 		// We expect a reflection
 		return edge_label == REFL_CHAR;
+	// There's a box off to port or starboard: evasive action!
 	else if(left || right) {
 		rotate_deltas(dr, dc, right);
 		next_r = r + dr;
 		next_c = c + dc;
 	}
+
+	// We're hitting another edge
+	if(next_r >= board_.size())
+		return edge_label != HIT_CHAR && edge_label != REFL_CHAR &&
+				edge_label == edge_labels_[next_r == board_.size() ? BOTTOM_EDGE : TOP_EDGE]
+				[next_c];
+	else if(next_c >= board_.size())
+		return edge_label != HIT_CHAR && edge_label != REFL_CHAR &&
+				edge_label == edge_labels_
+				[next_c == board_[next_r].size() ? RIGHT_EDGE : LEFT_EDGE]
+				[next_r];
+
 	return trace_from_label(edge_label, next_r, next_c, dr, dc);
 }
 
