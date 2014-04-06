@@ -40,6 +40,9 @@ class BoxConfig : public Configuration {
 		// Play board, where each true represents a mysterious device
 		std::vector<std::vector<bool>> board_;
 
+		// Which device to move in order to generate further configurations
+		unsigned nth_device_;
+
 		// String representation of this instance
 		mutable std::string repr_;
 
@@ -58,9 +61,9 @@ class BoxConfig : public Configuration {
 	private:
 		// Copy constructor for manufacturing successors. Moves the nth_device
 		// to the first unused position after the current last device's
-		// coordinates. By default, it acts on the last device (count - 1).
+		// coordinates. The new config will move the next device.
 		// Precondition: There *must* be space at the end of all things!
-		BoxConfig(const BoxConfig &basis, unsigned nth_device = -1);
+		BoxConfig(const BoxConfig &basis, unsigned nth_device);
 
 		// Start tracing from the spots on the border, returning whether valid
 		bool is_valid() const;

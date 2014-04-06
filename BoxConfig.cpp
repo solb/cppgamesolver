@@ -16,6 +16,7 @@ BoxConfig::BoxConfig(unsigned num_devices,
 		num_devices_(num_devices),
 		edge_labels_(move(edge_labels)),
 		board_(edge_labels_[RIGHT_EDGE].size()),
+		nth_device_(0),
 		repr_() {
 	for(vector<bool> &column : board_)
 		column.resize(edge_labels_[TOP_EDGE].size());
@@ -33,23 +34,19 @@ vector<shared_ptr<Configuration>> BoxConfig::successors() const {
 	vector<shared_ptr<Configuration>> next;
 	shared_ptr<BoxConfig> most_recent;
 
-	// TODO: THIS IS WRONG. It never moves the leading elements (see TODO below), but it also doesn't know when to stop yielding successors (i.e. move the same thing all over again). Instead, each level of the successors hierarchy should move a specific and characteristic one of the black box devices (e.g. the top level moves the first one to all possible positions, the second level the second, and so on).
+	// This is a terminal configuration, with no devices left unmoved.
+	if(nth_device_ == num_devices_)
+		return next;
 
 	// Is there room to grow?
 	if(!board_.back().back()) {
-		do {
+		do
 			next.push_back(most_recent =
 					shared_ptr<BoxConfig>(most_recent ?
-							new BoxConfig(*most_recent) : new BoxConfig(*this)))
-							;
-			std::cout << *most_recent << std::endl;
-			std::cin.get();
-			std::cout << std::boolalpha << most_recent->board_.back().back() << std::endl;
-		}
+							new BoxConfig(*most_recent, nth_device_) :
+							new BoxConfig(*this, nth_device_)));
 		while(!most_recent->board_.back().back());
 	}
-
-	// TODO move the first pieces, too
 
 	return next;
 }
@@ -95,10 +92,8 @@ BoxConfig::BoxConfig(const BoxConfig &basis, unsigned nth_device) :
 			num_devices_(basis.num_devices_),
 			edge_labels_(basis.edge_labels_),
 			board_(basis.board_),
+			nth_device_(nth_device + 1),
 			repr_() {
-	if(nth_device == (unsigned)-1)
-		nth_device = num_devices_ - 1;
-
 	unsigned seen = 0;
 	for(vector<bool> &row : board_)
 		for(vector<bool>::size_type col = 0; col < row.size(); ++col) {
