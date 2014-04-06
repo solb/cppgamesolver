@@ -179,15 +179,21 @@ bool BoxConfig::trace_from_label(char edge_label,
 	}
 
 	// We're hitting another edge
-	if(next_r >= board_.size())
+	if(next_r >= board_.size()) {
+		if(r >= board_.size())
+			return edge_label == REFL_CHAR;
 		return edge_label != HIT_CHAR && edge_label != REFL_CHAR &&
 				edge_label == edge_labels_[next_r == board_.size() ? BOTTOM_EDGE : TOP_EDGE]
 				[next_c];
-	else if(next_c >= board_.size())
+	}
+	else if(next_c >= board_.size()) {
+		if(c >= board_.size())
+			return edge_label == REFL_CHAR;
 		return edge_label != HIT_CHAR && edge_label != REFL_CHAR &&
 				edge_label == edge_labels_
 				[next_c == board_[next_r].size() ? RIGHT_EDGE : LEFT_EDGE]
 				[next_r];
+	}
 
 	return trace_from_label(edge_label, next_r, next_c, dr, dc);
 }
