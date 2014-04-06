@@ -161,14 +161,14 @@ bool BoxConfig::trace_from_label(char edge_label,
 	bool left = false, right = false;
 	if(dr) {
 		if(next_r < board_.size()) {
-			left = next_c + dc < board_.size() && board_[next_r][next_c + dc];
-			right = next_c - dc < board_.size() && board_[next_r][next_c - dc];
+			left = next_c + dr < board_.size() && board_[next_r][next_c + dr];
+			right = next_c - dr < board_.size() && board_[next_r][next_c - dr];
 		}
 	}
 	else {
 		if(next_c < board_.size()) {
-			left = next_r - dr < board_.size() && board_[next_r - dr][next_c];
-			right = next_r + dr < board_.size() && board_[next_r + dr][next_c];
+			left = next_r - dc < board_.size() && board_[next_r - dc][next_c];
+			right = next_r + dc < board_.size() && board_[next_r + dc][next_c];
 		}
 	}
 
