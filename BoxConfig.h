@@ -61,9 +61,10 @@ class BoxConfig : public Configuration {
 	private:
 		// Copy constructor for manufacturing successors. Moves the nth_device
 		// to the first unused position after the current last device's
-		// coordinates. The new config will move the next device.
+		// coordinates. The new config will move the next device. By default,
+		// no device is acutally changed: the next one to move merely increments
 		// Precondition: There *must* be space at the end of all things!
-		BoxConfig(const BoxConfig &basis, unsigned nth_device);
+		BoxConfig(const BoxConfig &basis, unsigned nth_device = -1);
 
 		// Start tracing from the spots on the border, returning whether valid
 		bool is_valid() const;

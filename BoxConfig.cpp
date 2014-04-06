@@ -32,21 +32,18 @@ BoxConfig::BoxConfig(unsigned num_devices,
 
 vector<shared_ptr<Configuration>> BoxConfig::successors() const {
 	vector<shared_ptr<Configuration>> next;
-	shared_ptr<BoxConfig> most_recent;
 
 	// This is a terminal configuration, with no devices left unmoved.
 	if(nth_device_ == num_devices_)
 		return next;
 
+	shared_ptr<BoxConfig> most_recent = shared_ptr<BoxConfig>(new BoxConfig(*this));
+	next.push_back(most_recent);
+
 	// Is there room to grow?
-	if(!board_.back().back()) {
-		do
-			next.push_back(most_recent =
-					shared_ptr<BoxConfig>(most_recent ?
-							new BoxConfig(*most_recent, nth_device_) :
-							new BoxConfig(*this, nth_device_)));
-		while(!most_recent->board_.back().back());
-	}
+	while(!most_recent->board_.back().back())
+			next.push_back(most_recent = shared_ptr<BoxConfig>(
+					new BoxConfig(*most_recent, nth_device_)));
 
 	return next;
 }
@@ -94,21 +91,25 @@ BoxConfig::BoxConfig(const BoxConfig &basis, unsigned nth_device) :
 			board_(basis.board_),
 			nth_device_(nth_device + 1),
 			repr_() {
-	unsigned seen = 0;
-	for(vector<bool> &row : board_)
-		for(vector<bool>::size_type col = 0; col < row.size(); ++col) {
-			// Here's one!
-			if(row[col]) {
-				// Just now counting the nth_device
-				if(seen++ == nth_device)
-					row[col] = false;
+	if(nth_device != (unsigned)-1) {
+		unsigned seen = 0;
+		for(vector<bool> &row : board_)
+			for(vector<bool>::size_type col = 0; col < row.size(); ++col) {
+				// Here's one!
+				if(row[col]) {
+					// Just now counting the nth_device
+					if(seen++ == nth_device)
+						row[col] = false;
+				}
+				// Counted off the last device last time
+				else if(seen == num_devices_) {
+					row[col] = true;
+					return;
+				}
 			}
-			// Counted off the last device last time
-			else if(seen == num_devices_) {
-				row[col] = true;
-				return;
-			}
-		}
+	}
+	else
+		nth_device_ = basis.nth_device_ + 1;
 }
 
 bool BoxConfig::is_valid() const {
@@ -122,7 +123,7 @@ bool BoxConfig::is_valid() const {
 		for(; change < edge_labels_[edge].size(); ++change) {
 			if(!trace_from_label(edge_labels_[edge][change], r, c, dr, dc))
 				return false;
-			std::cout << "row=" << r << " col=" << c << std::endl; // TODO remove
+			//std::cout << "row=" << r << " col=" << c << std::endl; // TODO remove
 		}
 
 		r = 0;
