@@ -3,6 +3,7 @@
 // 04/09/14 Project 2
 
 #include "BoxConfig.h"
+#include "solver.h"
 #include <cctype>
 #include <cstring>
 #include <iostream>
@@ -13,8 +14,11 @@ using std::cin;
 using std::cerr;
 using std::cout;
 using std::endl;
+using std::forward_list;
 using std::istream;
 using std::ifstream;
+using std::make_shared;
+using std::shared_ptr;
 using std::unique_ptr;
 using std::vector;
 
@@ -77,4 +81,21 @@ int main(int argc, char *argv[]) {
 				edges[edge].push_back(label);
 			}
 		}
+
+	/*BoxConfig tester(num_boxes, move(edges));
+	cout << tester << endl;
+	cout << std::boolalpha << tester.is_valid() << endl;*/
+
+	shared_ptr<Configuration> puzzle_state =
+			make_shared<BoxConfig>(num_boxes, move(edges));
+	shared_ptr<forward_list<shared_ptr<Configuration>>> puzzle_hist =
+			make_shared<forward_list<shared_ptr<Configuration>>>();
+
+	puzzle_state = pathMode ?
+			solver(puzzle_state, puzzle_hist) : solver(puzzle_state);
+
+	for(shared_ptr<Configuration> snapshot : *puzzle_hist)
+		cout << *snapshot << endl;
+
+	cout << (puzzle_state ? *puzzle_state : "No solution!") << endl;
 }

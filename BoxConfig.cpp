@@ -30,18 +30,38 @@ BoxConfig::BoxConfig(unsigned num_devices,
 }
 
 vector<shared_ptr<Configuration>> BoxConfig::successors() const {
-	// TODO Write this!
-	return vector<shared_ptr<Configuration>>();
+	vector<shared_ptr<Configuration>> next;
+	shared_ptr<BoxConfig> most_recent;
+
+	// TODO: THIS IS WRONG. It never moves the leading elements (see TODO below), but it also doesn't know when to stop yielding successors (i.e. move the same thing all over again). Instead, each level of the successors hierarchy should move a specific and characteristic one of the black box devices (e.g. the top level moves the first one to all possible positions, the second level the second, and so on).
+
+	// Is there room to grow?
+	if(!board_.back().back()) {
+		do {
+			next.push_back(most_recent =
+					shared_ptr<BoxConfig>(most_recent ?
+							new BoxConfig(*most_recent) : new BoxConfig(*this)))
+							;
+			std::cout << *most_recent << std::endl;
+			std::cin.get();
+			std::cout << std::boolalpha << most_recent->board_.back().back() << std::endl;
+		}
+		while(!most_recent->board_.back().back());
+	}
+
+	// TODO move the first pieces, too
+
+	return next;
 }
 
 bool BoxConfig::is_nonempty() const {
 	// TODO Do I need to implement this?  If not, perhaps provide a default?
-	return false;
+	return true;
 }
 
 bool BoxConfig::is_goal() const {
 	// TODO Write this!
-	return false;
+	return is_valid();
 }
 
 BoxConfig::operator const string &() const {
@@ -68,6 +88,32 @@ BoxConfig::operator const string &() const {
 	}
 
 	return repr_;
+}
+
+BoxConfig::BoxConfig(const BoxConfig &basis, unsigned nth_device) :
+			Configuration(),
+			num_devices_(basis.num_devices_),
+			edge_labels_(basis.edge_labels_),
+			board_(basis.board_),
+			repr_() {
+	if(nth_device == (unsigned)-1)
+		nth_device = num_devices_ - 1;
+
+	unsigned seen = 0;
+	for(vector<bool> &row : board_)
+		for(vector<bool>::size_type col = 0; col < row.size(); ++col) {
+			// Here's one!
+			if(row[col]) {
+				// Just now counting the nth_device
+				if(seen++ == nth_device)
+					row[col] = false;
+			}
+			// Counted off the last device last time
+			else if(seen == num_devices_) {
+				row[col] = true;
+				return;
+			}
+		}
 }
 
 bool BoxConfig::is_valid() const {

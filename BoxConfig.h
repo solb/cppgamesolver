@@ -56,6 +56,12 @@ class BoxConfig : public Configuration {
 		operator const std::string &() const;
 
 	private:
+		// Copy constructor for manufacturing successors. Moves the nth_device
+		// to the first unused position after the current last device's
+		// coordinates. By default, it acts on the last device (count - 1).
+		// Precondition: There *must* be space at the end of all things!
+		BoxConfig(const BoxConfig &basis, unsigned nth_device = -1);
+
 		// Start tracing from the spots on the border, returning whether valid
 		bool is_valid() const;
 
@@ -74,6 +80,8 @@ class BoxConfig : public Configuration {
 		// Returns a string representation of an edge label, which is a
 		// character if the label is a sentinel value, and numeric otherwise
 		static std::string represent_label(char label);
+
+	friend int main(int, char *[]);
 };
 
 #endif
