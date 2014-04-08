@@ -17,6 +17,8 @@ BoxConfig::BoxConfig(unsigned num_devices,
 		edge_labels_(move(edge_labels)),
 		board_(edge_labels_[RIGHT_EDGE].size()),
 		nth_device_(0),
+		last_placed_row_(0),
+		last_placed_col_(0),
 		repr_() {
 	for(vector<bool> &column : board_)
 		column.resize(edge_labels_[TOP_EDGE].size());
@@ -31,11 +33,28 @@ BoxConfig::BoxConfig(unsigned num_devices,
 }
 
 vector<shared_ptr<Configuration>> BoxConfig::successors() const {
+					/*std::cout << *this << std::endl; //TODO CUT THE CRAP
+                    std::cin.get();*/
+
 	vector<shared_ptr<Configuration>> next;
 
 	// This is a terminal configuration, with no devices left unmoved.
 	if(nth_device_ == num_devices_)
 		return next;
+
+	if(nth_device_) {
+		if((last_placed_row_ == 0 &&
+				!valid_edge_for_touching_device(TOP_EDGE, last_placed_col_)) ||
+		   (last_placed_row_ == board_.size() &&
+				!valid_edge_for_touching_device(BOTTOM_EDGE, last_placed_col_)) ||
+		   (last_placed_col_ == 0 &&
+		 		!valid_edge_for_touching_device(LEFT_EDGE, last_placed_row_)) ||
+		   (last_placed_col_ == board_[last_placed_row_].size() &&
+		  		!valid_edge_for_touching_device(RIGHT_EDGE, last_placed_row_))) {
+			//std::cout << "Pruned everything under:" << std::endl << *this << " w/ " << nth_device_ << std::endl;
+			return next;
+		}
+	}
 
 	shared_ptr<BoxConfig> most_recent = shared_ptr<BoxConfig>(new BoxConfig(*this));
 	next.push_back(most_recent);
@@ -90,20 +109,24 @@ BoxConfig::BoxConfig(const BoxConfig &basis, unsigned nth_device) :
 			edge_labels_(basis.edge_labels_),
 			board_(basis.board_),
 			nth_device_(nth_device + 1),
+			last_placed_row_(0),
+			last_placed_col_(0),
 			repr_() {
 	if(nth_device != (unsigned)-1) {
 		unsigned seen = 0;
-		for(vector<bool> &row : board_)
-			for(vector<bool>::size_type col = 0; col < row.size(); ++col) {
+		for(vector<bool>::size_type row = 0; row < board_.size(); ++row)
+			for(vector<bool>::size_type col = 0; col < board_[row].size(); ++col) {
 				// Here's one!
-				if(row[col]) {
+				if(board_[row][col]) {
 					// Just now counting the nth_device
 					if(seen++ == nth_device)
-						row[col] = false;
+						board_[row][col] = false;
 				}
 				// Counted off the last device last time
 				else if(seen == num_devices_) {
-					row[col] = true;
+					board_[row][col] = true;
+					last_placed_row_ = row;
+					last_placed_col_ = col;
 					return;
 				}
 			}

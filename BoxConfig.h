@@ -43,6 +43,10 @@ class BoxConfig : public Configuration {
 		// Which device to move in order to generate further configurations
 		unsigned nth_device_;
 
+		// Coordinates of the piece placed most recently (and is now fixed)
+		std::vector<std::vector<char>>::size_type last_placed_row_;
+		std::vector<char>::size_type last_placed_col_;
+
 		// String representation of this instance
 		mutable std::string repr_;
 
@@ -77,6 +81,12 @@ class BoxConfig : public Configuration {
 				std::vector<std::vector<bool>>::size_type dr,
 				std::vector<std::vector<bool>>::size_type dc) const;
 
+		// Returns whether the provided edge label is a hit, and whether its
+		// immediate neighbors are either hits or reflections
+		inline bool valid_edge_for_touching_device(
+				std::vector<std::vector<char>>::size_type edge,
+				std::vector<char>::size_type offset) const;
+
 		// Manipulate row/column deltas to reflect a CW or CCW rotation
 		static void rotate_deltas(std::vector<std::vector<bool>>::size_type &dr,
 				std::vector<std::vector<bool>>::size_type &dc, bool ccw);
@@ -84,8 +94,18 @@ class BoxConfig : public Configuration {
 		// Returns a string representation of an edge label, which is a
 		// character if the label is a sentinel value, and numeric otherwise
 		static std::string represent_label(char label);
-
-	friend int main(int, char *[]);
 };
+
+bool BoxConfig::valid_edge_for_touching_device(
+				std::vector<std::vector<char>>::size_type edge,
+				std::vector<char>::size_type offset) const {
+	return edge_labels_[edge][offset] == HIT_CHAR &&
+			(offset - 1 >= board_[edge].size() ||
+					edge_labels_[edge][offset - 1] == HIT_CHAR ||
+					edge_labels_[edge][offset - 1] == REFL_CHAR) &&
+			(offset + 1 >= board_[edge].size() ||
+					edge_labels_[edge][offset + 1] == HIT_CHAR ||
+					edge_labels_[edge][offset + 1] == REFL_CHAR);
+}
 
 #endif
