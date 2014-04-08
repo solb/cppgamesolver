@@ -45,11 +45,11 @@ vector<shared_ptr<Configuration>> BoxConfig::successors() const {
 	if(nth_device_) {
 		if((last_placed_row_ == 0 &&
 				!valid_edge_for_touching_device(TOP_EDGE, last_placed_col_)) ||
-		   (last_placed_row_ == board_.size() &&
+		   (last_placed_row_ == board_.size() - 1 &&
 				!valid_edge_for_touching_device(BOTTOM_EDGE, last_placed_col_)) ||
 		   (last_placed_col_ == 0 &&
 		 		!valid_edge_for_touching_device(LEFT_EDGE, last_placed_row_)) ||
-		   (last_placed_col_ == board_[last_placed_row_].size() &&
+		   (last_placed_col_ == board_[last_placed_row_].size() - 1 &&
 		  		!valid_edge_for_touching_device(RIGHT_EDGE, last_placed_row_))) {
 			//std::cout << "Pruned everything under:" << std::endl << *this << " w/ " << nth_device_ << std::endl;
 			return next;
@@ -118,15 +118,18 @@ BoxConfig::BoxConfig(const BoxConfig &basis, unsigned nth_device) :
 			for(vector<bool>::size_type col = 0; col < board_[row].size(); ++col) {
 				// Here's one!
 				if(board_[row][col]) {
-					// Just now counting the nth_device
+					// Send the *old* nth_device to the end to get *this* config
 					if(seen++ == nth_device)
 						board_[row][col] = false;
+					// The current *new* nth_device is now the old one
+					else if(seen - 1 == nth_device_) {
+						last_placed_row_ = row;
+						last_placed_col_ = col;
+					}
 				}
-				// Counted off the last device last time
+				// Counted off the last device last time, so this is blank space
 				else if(seen == num_devices_) {
 					board_[row][col] = true;
-					last_placed_row_ = row;
-					last_placed_col_ = col;
 					return;
 				}
 			}

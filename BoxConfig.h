@@ -40,7 +40,7 @@ class BoxConfig : public Configuration {
 		// Play board, where each true represents a mysterious device
 		std::vector<std::vector<bool>> board_;
 
-		// Which device to move in order to generate further configurations
+		// Which device to move in order to generate *further* configurations
 		unsigned nth_device_;
 
 		// Coordinates of the piece placed most recently (and is now fixed)
