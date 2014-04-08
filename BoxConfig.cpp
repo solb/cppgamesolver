@@ -114,7 +114,7 @@ BoxConfig::BoxConfig(const BoxConfig &basis, unsigned nth_device) :
 			repr_() {
 	if(nth_device != (unsigned)-1) {
 		unsigned seen = 0;
-		for(vector<bool>::size_type row = 0; row < board_.size(); ++row)
+		for(vector<vector<bool>>::size_type row = 0; row < board_.size(); ++row)
 			for(vector<bool>::size_type col = 0; col < board_[row].size(); ++col) {
 				// Here's one!
 				if(board_[row][col]) {
@@ -134,8 +134,18 @@ BoxConfig::BoxConfig(const BoxConfig &basis, unsigned nth_device) :
 				}
 			}
 	}
-	else
+	else {
 		nth_device_ = basis.nth_device_ + 1;
+		for(vector<vector<bool>>::size_type row = basis.last_placed_row_;
+				row < board_.size(); ++row)
+			for(vector<bool>::size_type col = basis.last_placed_col_;
+					col < board_[row].size(); ++col)
+				if(board_[row][col]) {
+					last_placed_row_ = row;
+					last_placed_col_ = col;
+					return;
+				}
+	}
 }
 
 bool BoxConfig::is_valid() const {
