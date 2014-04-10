@@ -58,6 +58,7 @@ class BoxConfig : public Configuration {
 
 		bool is_nonempty() const;
 
+		// Start tracing from the spots on the border, returning whether valid
 		bool is_goal() const;
 
 		operator const std::string &() const;
@@ -69,9 +70,6 @@ class BoxConfig : public Configuration {
 		// no device is acutally changed: the next one to move merely increments
 		// Precondition: There *must* be space at the end of all things!
 		BoxConfig(const BoxConfig &basis, unsigned nth_device = -1);
-
-		// Start tracing from the spots on the border, returning whether valid
-		bool is_valid() const;
 
 		// Trace from a specific spot on the border, returning whether the
 		// labels on the two ends of the laser match

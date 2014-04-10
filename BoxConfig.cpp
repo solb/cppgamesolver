@@ -4,7 +4,6 @@
 
 #include "BoxConfig.h"
 #include <algorithm>
-#include <iostream> // TODO remove
 using std::shared_ptr;
 using std::string;
 using std::swap;
@@ -33,9 +32,6 @@ BoxConfig::BoxConfig(unsigned num_devices,
 }
 
 vector<shared_ptr<Configuration>> BoxConfig::successors() const {
-					/*std::cout << *this << std::endl; //TODO CUT THE CRAP
-                    std::cin.get();*/
-
 	vector<shared_ptr<Configuration>> next;
 
 	// This is a terminal configuration, with no devices left unmoved.
@@ -68,13 +64,33 @@ vector<shared_ptr<Configuration>> BoxConfig::successors() const {
 }
 
 bool BoxConfig::is_nonempty() const {
-	// TODO Do I need to implement this?  If not, perhaps provide a default?
-	return true;
+	return nth_device_;
 }
 
 bool BoxConfig::is_goal() const {
-	// TODO Write this!
-	return is_valid();
+	vector<vector<bool>>::size_type r = -1;
+	vector<vector<bool>>::size_type c = 0;
+	vector<vector<bool>>::size_type dr = 1;
+	vector<vector<bool>>::size_type dc = 0;
+	for(vector<vector<char>>::size_type edge = 0; edge < edge_labels_.size();
+			++edge) {
+		vector<vector<bool>>::size_type &change = edge%2 ? r : c;
+		for(; change < edge_labels_[edge].size(); ++change)
+			if(!trace_from_label(edge_labels_[edge][change], r, c, dr, dc))
+				return false;
+
+		r = 0;
+		c = 0;
+		change = edge/2 ? -1 : edge_labels_[edge + 1].size();
+
+		if(edge%2 == 0) {
+			dr = -dr;
+			dc = -dc;
+		}
+		swap(dr, dc);
+	}
+
+	return true;
 }
 
 BoxConfig::operator const string &() const {
@@ -148,33 +164,6 @@ BoxConfig::BoxConfig(const BoxConfig &basis, unsigned nth_device) :
 	}
 }
 
-bool BoxConfig::is_valid() const {
-	vector<vector<bool>>::size_type r = -1;
-	vector<vector<bool>>::size_type c = 0;
-	vector<vector<bool>>::size_type dr = 1;
-	vector<vector<bool>>::size_type dc = 0;
-	for(vector<vector<char>>::size_type edge = 0; edge < edge_labels_.size();
-			++edge) {
-		vector<vector<bool>>::size_type &change = edge%2 ? r : c;
-		for(; change < edge_labels_[edge].size(); ++change) {
-			if(!trace_from_label(edge_labels_[edge][change], r, c, dr, dc))
-				return false;
-			//std::cout << "row=" << r << " col=" << c << std::endl; // TODO remove
-		}
-
-		r = 0;
-		c = 0;
-		change = edge/2 ? -1 : edge_labels_[edge + 1].size();
-
-		if(edge%2 == 0) {
-			dr = -dr;
-			dc = -dc;
-		}
-		swap(dr, dc);
-	}
-
-	return true;
-}
 
 bool BoxConfig::trace_from_label(char edge_label,
 		vector<vector<bool>>::size_type r, vector<vector<bool>>::size_type c,
