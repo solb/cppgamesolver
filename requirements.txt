@@ -25,6 +25,13 @@ The goal of the game is to correctly guess the coordinates of each "black box"
 using the information revealed by the lasers.  There is no cost associated
 with firing each laser (or all of them, for that matter).
 
+Limitations
+===========
+This implementation only supports square playing boards with a defined number
+of "black box" devices on them.  Because of the nature of the puzzle, pruning
+turns out to be rather difficult, and this implementation only attempts it
+for configurations that have placed a device on the very edge of the board.
+
 Invocation
 ==========
 $ ./blackbox [path] <input>
