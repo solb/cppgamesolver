@@ -19,9 +19,11 @@ BoxConfig::BoxConfig(unsigned num_devices,
 		last_placed_row_(0),
 		last_placed_col_(0),
 		repr_() {
+	// Size the edges to fit the board dimensions
 	for(vector<bool> &column : board_)
 		column.resize(edge_labels_[TOP_EDGE].size());
 
+	// Place devices in the first num_devices_ locations
 	unsigned added = 0;
 	for(vector<bool> &row : board_)
 		for(vector<bool>::size_type col = 0; col < row.size(); ++col) {
@@ -38,24 +40,28 @@ vector<shared_ptr<Configuration>> BoxConfig::successors() const {
 	if(nth_device_ == num_devices_)
 		return next;
 
+	// This is not the generic starting configuration
 	if(nth_device_) {
+		// The device whose position was fixed most recently in order to form
+		// this configuration is in an illegal spot, defined as touching the
+		// edge of the board in a place where it isn't surrounded by h s or r s
 		if((last_placed_row_ == 0 &&
 				!valid_edge_for_touching_device(TOP_EDGE, last_placed_col_)) ||
 		   (last_placed_row_ == board_.size() - 1 &&
 				!valid_edge_for_touching_device(BOTTOM_EDGE, last_placed_col_)) ||
 		   (last_placed_col_ == 0 &&
-		 		!valid_edge_for_touching_device(LEFT_EDGE, last_placed_row_)) ||
+				!valid_edge_for_touching_device(LEFT_EDGE, last_placed_row_)) ||
 		   (last_placed_col_ == board_[last_placed_row_].size() - 1 &&
-		  		!valid_edge_for_touching_device(RIGHT_EDGE, last_placed_row_))) {
-			//std::cout << "Pruned everything under:" << std::endl << *this << " w/ " << nth_device_ << std::endl;
+				!valid_edge_for_touching_device(RIGHT_EDGE, last_placed_row_)))
+			// Prune this entire branch of the tree
 			return next;
-		}
 	}
 
+	// Start by fixing the current nth_device_ in its present location
 	shared_ptr<BoxConfig> most_recent = shared_ptr<BoxConfig>(new BoxConfig(*this));
 	next.push_back(most_recent);
 
-	// Is there room to grow?
+	// Also try it at every other possible position
 	while(!most_recent->board_.back().back())
 			next.push_back(most_recent = shared_ptr<BoxConfig>(
 					new BoxConfig(*most_recent, nth_device_)));
@@ -64,6 +70,7 @@ vector<shared_ptr<Configuration>> BoxConfig::successors() const {
 }
 
 bool BoxConfig::is_nonempty() const {
+	// Don't reveal the generic starting config (with no placements) in paths
 	return nth_device_;
 }
 
@@ -129,6 +136,7 @@ BoxConfig::BoxConfig(const BoxConfig &basis, unsigned nth_device) :
 			last_placed_col_(0),
 			repr_() {
 	if(nth_device != (unsigned)-1) {
+		// Move the *old* nth_device to the position after the last device
 		unsigned seen = 0;
 		for(vector<vector<bool>>::size_type row = 0; row < board_.size(); ++row)
 			for(vector<bool>::size_type col = 0; col < board_[row].size(); ++col) {
@@ -145,13 +153,16 @@ BoxConfig::BoxConfig(const BoxConfig &basis, unsigned nth_device) :
 				}
 				// Counted off the last device last time, so this is blank space
 				else if(seen == num_devices_) {
+					// Move the redacted device to this position
 					board_[row][col] = true;
 					return;
 				}
 			}
 	}
 	else {
+		// Just leave the *old* nth_device in place
 		nth_device_ = basis.nth_device_ + 1;
+		// Find out where the *last* device was placed
 		for(vector<vector<bool>>::size_type row = basis.last_placed_row_;
 				row < board_.size(); ++row)
 			for(vector<bool>::size_type col = basis.last_placed_col_;
@@ -221,6 +232,7 @@ bool BoxConfig::trace_from_label(char edge_label,
 				[next_r];
 	}
 
+	// Keep following the path until we actually hit an edge or we reflect
 	return trace_from_label(edge_label, next_r, next_c, dr, dc);
 }
 
