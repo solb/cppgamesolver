@@ -28,7 +28,7 @@ const char *const SYMB_STDIN = "-";
 int main(int argc, char *argv[]) {
 	// Process command-line argument(s)
 	bool pathMode = false;
-	if(argc > 2) {
+	if(argc != 2) {
 		if(argc == 3 && !strcmp(argv[1], "path"))
 			pathMode = true;
 		else {
@@ -82,20 +82,19 @@ int main(int argc, char *argv[]) {
 			}
 		}
 
-	/*BoxConfig tester(num_boxes, move(edges));
-	cout << tester << endl;
-	cout << std::boolalpha << tester.is_valid() << endl;*/
-
+	// Space for our solution and descent path
 	shared_ptr<Configuration> puzzle_state =
 			make_shared<BoxConfig>(num_boxes, move(edges));
 	shared_ptr<forward_list<shared_ptr<Configuration>>> puzzle_hist =
 			make_shared<forward_list<shared_ptr<Configuration>>>();
 
+	// Solve the puzzle
 	puzzle_state = pathMode ?
 			solver(puzzle_state, puzzle_hist) : solver(puzzle_state);
 
+	// Print out the solution path if we generated one
 	for(shared_ptr<Configuration> snapshot : *puzzle_hist)
-		cout << *snapshot << endl;
+		cout << *snapshot << endl << endl;
 
 	cout << (puzzle_state ? *puzzle_state : "No solution!") << endl;
 }
