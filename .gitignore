@@ -1,4 +1,7 @@
 *.o
+moc_*
 /blackbox
 /objs.mk
 /wheel
+/gui/blackbox_gui
+/gui/Makefile
