@@ -9,7 +9,7 @@
 
 // A configuration for boxing with lasers using backtracking
 class BoxConfig : public Configuration {
-	private:
+	protected:
 		// The edge label sentinel character indicating a hit
 		static const char HIT_CHAR = 'h';
 
@@ -89,9 +89,12 @@ class BoxConfig : public Configuration {
 		static void rotate_deltas(std::vector<std::vector<bool>>::size_type &dr,
 				std::vector<std::vector<bool>>::size_type &dc, bool ccw);
 
+	protected:
 		// Returns a string representation of an edge label, which is a
 		// character if the label is a sentinel value, and numeric otherwise
 		static std::string represent_label(char label);
+
+		BoxConfig(BoxConfig &&victim);
 };
 
 bool BoxConfig::valid_edge_for_touching_device(
