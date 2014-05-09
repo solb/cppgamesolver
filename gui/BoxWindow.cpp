@@ -32,10 +32,6 @@ BoxWindow::BoxWindow(QWidget *parent) :
 	show();
 }
 
-BoxWindow::~BoxWindow() {
-	delete load;
-}
-
 void BoxWindow::enable_all_buttons() {
 	validate->setEnabled(true);
 	hint->setEnabled(true);
@@ -48,9 +44,15 @@ void BoxWindow::disable_advancing_buttons() {
 
 void BoxWindow::loadBoard() {
 	QString filename = QFileDialog::getOpenFileName();
+	bool had_board = board.operator bool();
 	if(filename.length())
 		board = BoxPuzzle::createFromFile(filename.toLocal8Bit().data(), this);
 	if(board) {
+		if(had_board) {
+			QApplication::processEvents(QEventLoop::ExcludeUserInputEvents,
+					LONGEST_EVENT_LOOP_WAIT);
+			resize(0, 0);
+		}
 		outer->addLayout(board.get());
 		enable_all_buttons();
 	}

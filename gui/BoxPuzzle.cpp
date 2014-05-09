@@ -79,7 +79,8 @@ BoxPuzzle::BoxPuzzle(unsigned num_devices, vector<vector<char>> &&edge_labels,
 			tried_to_solve_(false),
 			solution_(nullptr),
 			NOTHING_TO_SEE_HERE_(board_.size(), board_[0].size()),
-			parent_(parent) {
+			parent_(parent),
+			visible_() {
 	solution_ = make_shared<BoxConfig>(num_devices, move(edge_labels));
 
 	// Place the edge labels
@@ -88,6 +89,7 @@ BoxPuzzle::BoxPuzzle(unsigned num_devices, vector<vector<char>> &&edge_labels,
 			QLabel *label = new QLabel(QString(
 					BoxConfig::represent_label(edge_labels_[edge][index]).
 							c_str()));
+			visible_.push_front(label);
 			if(edge % 2)
 				addWidget(label, index + 1,
 						edge == BoxConfig::LEFT_EDGE ? 0 : board_[0].size() + 1)
@@ -101,10 +103,16 @@ BoxPuzzle::BoxPuzzle(unsigned num_devices, vector<vector<char>> &&edge_labels,
 	for(vector<bool>::size_type r = 0; r < board_.size(); ++r)
 		for(vector<bool>::size_type c = 0; c < board_[r].size(); ++c) {
 			board_[r][c] = new QCheckBox();
+			visible_.push_front(board_[r][c]);
 			connect(board_[r][c], &QCheckBox::stateChanged, this,
 					&BoxPuzzle::board_was_updated);
 			addWidget(board_[r][c], r + 1, c + 1);
 		}
+}
+
+BoxPuzzle::~BoxPuzzle() {
+	for(QWidget *cleanup : visible_)
+		delete cleanup;
 }
 
 bool BoxPuzzle::has_solution() const {

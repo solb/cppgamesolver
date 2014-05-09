@@ -15,6 +15,8 @@ class BoxWindow : public QMainWindow {
 	Q_OBJECT
 
 private:
+	static const int LONGEST_EVENT_LOOP_WAIT = 100; // ms
+
 	QVBoxLayout *outer;
 	QPushButton *load;
 	QPushButton *validate;
@@ -23,7 +25,6 @@ private:
 
 public:
 	explicit BoxWindow(QWidget *parent = nullptr);
-	virtual ~BoxWindow();
 
 	void enable_all_buttons();
 

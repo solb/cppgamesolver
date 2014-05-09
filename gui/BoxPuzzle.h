@@ -8,12 +8,14 @@
 #define BOX_PUZZLE_H_
 
 #include "../BoxConfig.h"
+#include <forward_list>
 #include <QGridLayout>
 #include <tuple>
 #include <vector>
 
 class BoxWindow;
 class QCheckBox;
+class QWidget;
 
 typedef std::vector<std::vector<QCheckBox *>>::size_type rindex_t;
 typedef std::vector<QCheckBox *>::size_type cindex_t;
@@ -46,9 +48,14 @@ private:
 	// Our containing window
 	BoxWindow *parent_;
 
+	// The widgets we need to clean up when we're done
+	std::forward_list<QWidget *> visible_;
+
 public:
 	static std::shared_ptr<BoxPuzzle> createFromFile(const char *filename,
 			BoxWindow *parent);
+
+	~BoxPuzzle();
 
 	bool has_solution() const;
 
