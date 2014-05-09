@@ -60,12 +60,14 @@ shared_ptr<BoxPuzzle> BoxPuzzle::createFromFile(const char *filename) {
 			}
 		}
 
-	return shared_ptr<BoxPuzzle>(new BoxPuzzle(move(edges), num_boxes));
+	return shared_ptr<BoxPuzzle>(new BoxPuzzle(num_boxes, move(edges)));
 }
 
-BoxPuzzle::BoxPuzzle(vector<vector<char>> &&edge_labels, unsigned num_boxes,
+BoxPuzzle::BoxPuzzle(unsigned num_devices, vector<vector<char>> &&edge_labels,
 		QWidget *parent) :
 			QGridLayout(parent),
+			num_devices_(num_devices),
+			placed_devices_(0),
 			edge_labels_(edge_labels[BoxConfig::LEFT_EDGE].size(),
 					vector<char>(edge_labels[BoxConfig::TOP_EDGE].size())),
 			board_(edge_labels[BoxConfig::LEFT_EDGE].size(),
@@ -74,7 +76,7 @@ BoxPuzzle::BoxPuzzle(vector<vector<char>> &&edge_labels, unsigned num_boxes,
 			tried_to_solve_(false),
 			solution_(nullptr),
 			NOTHING_TO_SEE_HERE_(board_.size(), board_[0].size()) {
-	solution_ = make_shared<BoxConfig>(num_boxes, move(edge_labels));
+	solution_ = make_shared<BoxConfig>(num_devices, move(edge_labels));
 
 	// Place the edge labels
 	for(vector<char>::size_type edge = 0; edge < edge_labels_.size(); ++edge)
@@ -95,6 +97,8 @@ BoxPuzzle::BoxPuzzle(vector<vector<char>> &&edge_labels, unsigned num_boxes,
 	for(vector<bool>::size_type r = 0; r < board_.size(); ++r)
 		for(vector<bool>::size_type c = 0; c < board_[r].size(); ++c) {
 			board_[r][c] = new QCheckBox();
+			connect(board_[r][c], &QCheckBox::stateChanged, this,
+					&BoxPuzzle::board_was_updated);
 			addWidget(board_[r][c], r + 1, c + 1);
 		}
 }
@@ -131,6 +135,29 @@ bool BoxPuzzle::advance_game() {
 	board_[get<0>(where_to)][get<1>(where_to)]->setCheckState(new_state);
 
 	return true;
+}
+
+void BoxPuzzle::board_was_updated(int new_state) {
+	if(new_state == Qt::Checked) {
+		if(++placed_devices_ == num_devices_)
+			lock_unselected_locations();
+	}
+	else {
+		if(placed_devices_-- == num_devices_)
+			unlock_every_location();
+	}
+}
+
+void BoxPuzzle::lock_unselected_locations() {
+	for(vector<QCheckBox *> row : board_)
+		for_each(row.begin(), row.end(), [] (QCheckBox *box)
+				{ if(!box->isChecked()) box->setEnabled(false); });
+}
+
+void BoxPuzzle::unlock_every_location() {
+	for(vector<QCheckBox *> row : board_)
+		for_each(row.begin(), row.end(), [] (QCheckBox *box)
+				{ box->setEnabled(true); });
 }
 
 tuple<rindex_t, cindex_t> BoxPuzzle::first_distinguishing_coordinate(

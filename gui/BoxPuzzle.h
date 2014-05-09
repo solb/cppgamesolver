@@ -20,6 +20,12 @@ class BoxPuzzle : public QGridLayout {
 	Q_OBJECT
 
 private:
+	// Our number of devices (analagous to BoxConfig::num_devices_)
+	const unsigned num_devices_;
+
+	// The number of devices we've placed thus far
+	unsigned placed_devices_;
+
 	// Our edge labels (analagous to BoxConfig::edge_labels_)
 	std::vector<std::vector<char>> edge_labels_;
 
@@ -45,8 +51,15 @@ public:
 	bool advance_game();
 
 private:
-	BoxPuzzle(std::vector<std::vector<char>> &&edge_labels, unsigned num_boxes,
+	BoxPuzzle(unsigned num_devices,
+			std::vector<std::vector<char>> &&edge_labels,
 			QWidget *parent = nullptr);
+
+	void board_was_updated(int new_state);
+
+	void lock_unselected_locations();
+
+	void unlock_every_location();
 
 	std::tuple<rindex_t, cindex_t> first_distinguishing_coordinate(
 			bool (BoxPuzzle::*decider)(rindex_t, cindex_t) const) const;
