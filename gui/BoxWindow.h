@@ -18,6 +18,7 @@ private:
 	QVBoxLayout *outer;
 	QPushButton *load;
 	QPushButton *validate;
+	QPushButton *hint;
 	std::shared_ptr<BoxPuzzle> board;
 
 public:
@@ -28,6 +29,8 @@ private:
 	void loadBoard();
 
 	void validateMoves() const;
+
+	void requestHint();
 
 	// Disable copy and assign
 	BoxWindow(const BoxWindow &) = delete;

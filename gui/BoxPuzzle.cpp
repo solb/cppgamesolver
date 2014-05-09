@@ -15,11 +15,14 @@
 #include <utility>
 #include <vector>
 
+using Qt::CheckState;
 using std::dynamic_pointer_cast;
+using std::get;
 using std::ifstream;
 using std::make_shared;
 using std::move;
 using std::shared_ptr;
+using std::tuple;
 using std::vector;
 
 shared_ptr<BoxPuzzle> BoxPuzzle::createFromFile(const char *filename) {
@@ -69,7 +72,8 @@ BoxPuzzle::BoxPuzzle(vector<vector<char>> &&edge_labels, unsigned num_boxes,
 					vector<QCheckBox *>
 							(edge_labels[BoxConfig::TOP_EDGE].size())),
 			tried_to_solve_(false),
-			solution_(nullptr) {
+			solution_(nullptr),
+			NOTHING_TO_SEE_HERE_(board_.size(), board_[0].size()) {
 	solution_ = make_shared<BoxConfig>(num_boxes, move(edge_labels));
 
 	// Place the edge labels
@@ -95,18 +99,54 @@ BoxPuzzle::BoxPuzzle(vector<vector<char>> &&edge_labels, unsigned num_boxes,
 		}
 }
 
-bool BoxPuzzle::is_on_the_right_track() const {
+bool BoxPuzzle::has_solution() const {
 	if(!tried_to_solve_)
 		solution_ = dynamic_pointer_cast<BoxConfig>(solver(solution_));
-	if(!solution_)
+	return (bool)solution_;
+}
+
+bool BoxPuzzle::is_on_the_right_track() const {
+	if(!has_solution())
 		return false;
 
 	// Ensure they haven't done anything the solution doesn't
 	// TODO This approach doesn't work for boards with multiple solutions
-	for(vector<vector<bool>>::size_type r = 0; r < board_.size(); ++r)
-		for(vector<bool>::size_type c = 0; c < board_[r].size(); ++c)
-			if(this->board_[r][c]->isChecked() && !solution_->board(r)[c])
-				return false;
+	return first_distinguishing_coordinate(&BoxPuzzle::invalid_placement) == NOTHING_TO_SEE_HERE_;
 
 	return true;
+}
+
+bool BoxPuzzle::advance_game() {
+	if(!has_solution())
+		return false;
+
+	tuple<rindex_t, cindex_t> where_to =
+			first_distinguishing_coordinate(&BoxPuzzle::invalid_placement);
+	CheckState new_state = Qt::Unchecked;
+
+	if(where_to == NOTHING_TO_SEE_HERE_) {
+		where_to = first_distinguishing_coordinate(&BoxPuzzle::missing_placement);
+		new_state = Qt::Checked;
+	}
+	board_[get<0>(where_to)][get<1>(where_to)]->setCheckState(new_state);
+
+	return true;
+}
+
+tuple<rindex_t, cindex_t> BoxPuzzle::first_distinguishing_coordinate(
+		bool (BoxPuzzle::*decider)(rindex_t, cindex_t) const) const {
+	for(rindex_t r = 0; r < board_.size(); ++r)
+		for(cindex_t c = 0; c < board_[r].size(); ++c)
+			if((this->*decider)(r, c))
+				return tuple<rindex_t, cindex_t>(r, c);
+
+	return NOTHING_TO_SEE_HERE_;
+}
+
+bool BoxPuzzle::invalid_placement(rindex_t row, cindex_t col) const {
+	return this->board_[row][col]->isChecked() && !solution_->board(row)[col];
+}
+
+bool BoxPuzzle::missing_placement(rindex_t row, cindex_t col) const {
+	return solution_->board(row)[col] && !this->board_[row][col]->isChecked();
 }
