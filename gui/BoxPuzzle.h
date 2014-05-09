@@ -8,6 +8,7 @@
 #define BOX_PUZZLE_H_
 
 #include "../BoxConfig.h"
+#include <QCheckBox>
 #include <QGridLayout>
 #include <vector>
 
@@ -19,7 +20,7 @@ private:
 	std::vector<std::vector<char>> edge_labels_;
 
 	// Our board (analagous to BoxConfig::edge_labels_)
-	std::vector<std::vector<bool>> board_;
+	std::vector<std::vector<QCheckBox *>> board_;
 
 	// Whether we've tried to solve the puzzle yet
 	mutable bool tried_to_solve_;

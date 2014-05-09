@@ -63,9 +63,11 @@ shared_ptr<BoxPuzzle> BoxPuzzle::createFromFile(const char *filename) {
 BoxPuzzle::BoxPuzzle(vector<vector<char>> &&edge_labels, unsigned num_boxes,
 		QWidget *parent) :
 			QGridLayout(parent),
-			edge_labels_(edge_labels),
+			edge_labels_(edge_labels[BoxConfig::LEFT_EDGE].size(),
+					vector<char>(edge_labels[BoxConfig::TOP_EDGE].size())),
 			board_(edge_labels[BoxConfig::LEFT_EDGE].size(),
-					vector<bool>(edge_labels[BoxConfig::TOP_EDGE].size())),
+					vector<QCheckBox *>
+							(edge_labels[BoxConfig::TOP_EDGE].size())),
 			tried_to_solve_(false),
 			solution_(nullptr) {
 	solution_ = make_shared<BoxConfig>(num_boxes, move(edge_labels));
@@ -88,10 +90,8 @@ BoxPuzzle::BoxPuzzle(vector<vector<char>> &&edge_labels, unsigned num_boxes,
 	// Place the "black box" devices
 	for(vector<bool>::size_type r = 0; r < board_.size(); ++r)
 		for(vector<bool>::size_type c = 0; c < board_[r].size(); ++c) {
-			QCheckBox *blackbox = new QCheckBox();
-			if(board_[r][c])
-				blackbox->setCheckState(Qt::Checked);
-			addWidget(blackbox, r + 1, c + 1);
+			board_[r][c] = new QCheckBox();
+			addWidget(board_[r][c], r + 1, c + 1);
 		}
 }
 
@@ -105,7 +105,7 @@ bool BoxPuzzle::is_on_the_right_track() const {
 	// TODO This approach doesn't work for boards with multiple solutions
 	for(vector<vector<bool>>::size_type r = 0; r < board_.size(); ++r)
 		for(vector<bool>::size_type c = 0; c < board_[r].size(); ++c)
-			if(this->board_[r][c] && !solution_->board(r)[c])
+			if(this->board_[r][c]->isChecked() && !solution_->board(r)[c])
 				return false;
 
 	return true;
