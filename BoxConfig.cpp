@@ -4,8 +4,6 @@
 
 #include "BoxConfig.h"
 #include <algorithm>
-#include <utility>
-using std::move;
 using std::shared_ptr;
 using std::string;
 using std::swap;
@@ -100,6 +98,14 @@ bool BoxConfig::is_goal() const {
 	}
 
 	return true;
+}
+
+const vector<char> &BoxConfig::edge_labels(vector<char>::size_type edge) const {
+	return edge_labels_[edge];
+}
+
+const vector<bool> &BoxConfig::board(vector<bool>::size_type row) const {
+	return board_[row];
 }
 
 BoxConfig::operator const string &() const {
@@ -253,12 +259,3 @@ string BoxConfig::represent_label(char label) {
 	else
 		return to_string(label);
 }
-
-BoxConfig::BoxConfig(BoxConfig &&victim) :
-			num_devices_(victim.num_devices_),
-			edge_labels_(move(victim.edge_labels_)),
-			board_(move(victim.board_)),
-			nth_device_(victim.nth_device_),
-			last_placed_row_(victim.last_placed_row_),
-			last_placed_col_(victim.last_placed_col_),
-			repr_(move(victim.repr_)) {}

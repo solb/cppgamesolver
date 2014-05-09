@@ -9,7 +9,7 @@
 
 // A configuration for boxing with lasers using backtracking
 class BoxConfig : public Configuration {
-	protected:
+	private:
 		// The edge label sentinel character indicating a hit
 		static const char HIT_CHAR = 'h';
 
@@ -21,15 +21,6 @@ class BoxConfig : public Configuration {
 
 		// Representation of a device in the grid
 		static const char REPR_DEVC = '*';
-
-		// The indices of the edge labels for a given side of the board
-		static const std::vector<std::vector<char>>::size_type TOP_EDGE = 0;
-		static const std::vector<std::vector<char>>::size_type RIGHT_EDGE =
-				1;
-		static const std::vector<std::vector<char>>::size_type BOTTOM_EDGE =
-				2;
-		static const std::vector<std::vector<char>>::size_type LEFT_EDGE =
-				3;
 
 		// Number of "black box" devices that need to be placed
 		const unsigned num_devices_;
@@ -51,6 +42,15 @@ class BoxConfig : public Configuration {
 		mutable std::string repr_;
 
 	public:
+		// The indices of the edge labels for a given side of the board
+		static const std::vector<std::vector<char>>::size_type TOP_EDGE = 0;
+		static const std::vector<std::vector<char>>::size_type RIGHT_EDGE =
+				1;
+		static const std::vector<std::vector<char>>::size_type BOTTOM_EDGE =
+				2;
+		static const std::vector<std::vector<char>>::size_type LEFT_EDGE =
+				3;
+
 		BoxConfig(unsigned num_devices,
 				std::vector<std::vector<char>> &&edge_labels);
 
@@ -60,6 +60,13 @@ class BoxConfig : public Configuration {
 
 		// Start tracing from the spots on the border, returning whether valid
 		bool is_goal() const;
+
+		// Getter for read-only access to edge_labels_[edge]
+		const std::vector<char> &edge_labels(std::vector<char>::size_type edge)
+				const;
+
+		// Getter for read-only access to board_[row]
+		const std::vector<bool> &board(std::vector<bool>::size_type row) const;
 
 		operator const std::string &() const;
 
@@ -89,12 +96,10 @@ class BoxConfig : public Configuration {
 		static void rotate_deltas(std::vector<std::vector<bool>>::size_type &dr,
 				std::vector<std::vector<bool>>::size_type &dc, bool ccw);
 
-	protected:
+	public:
 		// Returns a string representation of an edge label, which is a
 		// character if the label is a sentinel value, and numeric otherwise
 		static std::string represent_label(char label);
-
-		BoxConfig(BoxConfig &&victim);
 };
 
 bool BoxConfig::valid_edge_for_touching_device(
