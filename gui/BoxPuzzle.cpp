@@ -5,12 +5,14 @@
 // Graphical configuration for Black Box boards
 
 #include "BoxPuzzle.h"
+#include "BoxWindow.h"
 #include "../solver.h"
 #include <fstream>
 #include <QChar>
 #include <QCheckBox>
 #include <QErrorMessage>
 #include <QLabel>
+#include <QMessageBox>
 #include <string>
 #include <utility>
 #include <vector>
@@ -25,7 +27,8 @@ using std::shared_ptr;
 using std::tuple;
 using std::vector;
 
-shared_ptr<BoxPuzzle> BoxPuzzle::createFromFile(const char *filename) {
+shared_ptr<BoxPuzzle> BoxPuzzle::createFromFile(const char *filename,
+		BoxWindow *parent) {
 	ifstream ins(filename);
 
 	// Ensure we can read the file
@@ -60,11 +63,11 @@ shared_ptr<BoxPuzzle> BoxPuzzle::createFromFile(const char *filename) {
 			}
 		}
 
-	return shared_ptr<BoxPuzzle>(new BoxPuzzle(num_boxes, move(edges)));
+	return shared_ptr<BoxPuzzle>(new BoxPuzzle(num_boxes, move(edges), parent));
 }
 
 BoxPuzzle::BoxPuzzle(unsigned num_devices, vector<vector<char>> &&edge_labels,
-		QWidget *parent) :
+		BoxWindow *parent) :
 			QGridLayout(parent),
 			num_devices_(num_devices),
 			placed_devices_(0),
@@ -75,7 +78,8 @@ BoxPuzzle::BoxPuzzle(unsigned num_devices, vector<vector<char>> &&edge_labels,
 							(edge_labels[BoxConfig::TOP_EDGE].size())),
 			tried_to_solve_(false),
 			solution_(nullptr),
-			NOTHING_TO_SEE_HERE_(board_.size(), board_[0].size()) {
+			NOTHING_TO_SEE_HERE_(board_.size(), board_[0].size()),
+			parent_(parent) {
 	solution_ = make_shared<BoxConfig>(num_devices, move(edge_labels));
 
 	// Place the edge labels
@@ -139,12 +143,22 @@ bool BoxPuzzle::advance_game() {
 
 void BoxPuzzle::board_was_updated(int new_state) {
 	if(new_state == Qt::Checked) {
-		if(++placed_devices_ == num_devices_)
+		if(++placed_devices_ == num_devices_) {
 			lock_unselected_locations();
+			has_solution();
+			if(first_distinguishing_coordinate(&BoxPuzzle::missing_placement)
+					== NOTHING_TO_SEE_HERE_) {
+				parent_->disable_advancing_buttons();
+				QMessageBox::information(nullptr, "Congratulations",
+						"You win!");
+				}
+		}
 	}
 	else {
-		if(placed_devices_-- == num_devices_)
+		if(placed_devices_-- == num_devices_) {
 			unlock_every_location();
+			parent_->enable_all_buttons();
+		}
 	}
 }
 

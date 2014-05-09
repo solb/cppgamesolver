@@ -13,6 +13,9 @@ BoxWindow::BoxWindow(QWidget *parent) :
 			validate(new QPushButton("&Validate moves")),
 			hint(new QPushButton("Get &hint")) {
 	setWindowTitle("Sol Boucher's Black Box implementation");
+	validate->setEnabled(false);
+	hint->setEnabled(false);
+
 	QWidget *central = new QWidget();
 
 	QHBoxLayout *buttons = new QHBoxLayout();
@@ -33,12 +36,24 @@ BoxWindow::~BoxWindow() {
 	delete load;
 }
 
+void BoxWindow::enable_all_buttons() {
+	validate->setEnabled(true);
+	hint->setEnabled(true);
+}
+
+void BoxWindow::disable_advancing_buttons() {
+	validate->setEnabled(false);
+	hint->setEnabled(false);
+}
+
 void BoxWindow::loadBoard() {
 	QString filename = QFileDialog::getOpenFileName();
 	if(filename.length())
-		board = BoxPuzzle::createFromFile(filename.toLocal8Bit().data());
-	if(board)
+		board = BoxPuzzle::createFromFile(filename.toLocal8Bit().data(), this);
+	if(board) {
 		outer->addLayout(board.get());
+		enable_all_buttons();
+	}
 }
 
 void BoxWindow::validateMoves() const {

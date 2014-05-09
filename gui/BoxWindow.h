@@ -25,6 +25,10 @@ public:
 	explicit BoxWindow(QWidget *parent = nullptr);
 	virtual ~BoxWindow();
 
+	void enable_all_buttons();
+
+	void disable_advancing_buttons();
+
 private:
 	void loadBoard();
 
