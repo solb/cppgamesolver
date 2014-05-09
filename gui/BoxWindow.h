@@ -17,6 +17,7 @@ class BoxWindow : public QMainWindow {
 private:
 	QVBoxLayout *outer;
 	QPushButton *load;
+	QPushButton *validate;
 	std::shared_ptr<BoxPuzzle> board;
 
 public:
@@ -25,6 +26,8 @@ public:
 
 private:
 	void loadBoard();
+
+	void validateMoves() const;
 
 	// Disable copy and assign
 	BoxWindow(const BoxWindow &) = delete;

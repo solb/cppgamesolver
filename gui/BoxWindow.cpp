@@ -9,13 +9,16 @@
 BoxWindow::BoxWindow(QWidget *parent) :
 			QMainWindow(parent),
 			outer(new QVBoxLayout()),
-			load(new QPushButton("&Load board")) {
+			load(new QPushButton("&Load board")),
+			validate(new QPushButton("&Validate moves")) {
 	setWindowTitle("Sol Boucher's Black Box implementation");
 	QWidget *central = new QWidget();
 
 	QHBoxLayout *buttons = new QHBoxLayout();
 	connect(load, &QPushButton::clicked, this, &BoxWindow::loadBoard);
+	connect(validate, &QPushButton::clicked, this, &BoxWindow::validateMoves);
 	buttons->addWidget(load);
+	buttons->addWidget(validate);
 	outer->addLayout(buttons);
 
 	central->setLayout(outer);
@@ -32,5 +35,10 @@ void BoxWindow::loadBoard() {
 	if(filename.length())
 		board = BoxPuzzle::createFromFile(filename.toLocal8Bit().data());
 	if(board)
-		outer->addLayout(board.get());	
+		outer->addLayout(board.get());
+}
+
+void BoxWindow::validateMoves() const {
+	QMessageBox::information(nullptr, "Move validation",
+			board->is_on_the_right_track() ? "VALID" : "INVALID");
 }

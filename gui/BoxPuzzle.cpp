@@ -5,8 +5,8 @@
 // Graphical configuration for Black Box boards
 
 #include "BoxPuzzle.h"
+#include "../solver.h"
 #include <fstream>
-#include <memory>
 #include <QChar>
 #include <QCheckBox>
 #include <QErrorMessage>
@@ -15,7 +15,9 @@
 #include <utility>
 #include <vector>
 
+using std::dynamic_pointer_cast;
 using std::ifstream;
+using std::make_shared;
 using std::move;
 using std::shared_ptr;
 using std::vector;
@@ -55,31 +57,56 @@ shared_ptr<BoxPuzzle> BoxPuzzle::createFromFile(const char *filename) {
 			}
 		}
 
-	return shared_ptr<BoxPuzzle>(new BoxPuzzle(BoxConfig(num_boxes, move(edges))));
+	return shared_ptr<BoxPuzzle>(new BoxPuzzle(move(edges), num_boxes));
 }
 
-BoxPuzzle::BoxPuzzle(BoxConfig &&plain, QWidget *parent) :
+BoxPuzzle::BoxPuzzle(vector<vector<char>> &&edge_labels, unsigned num_boxes,
+		QWidget *parent) :
 			QGridLayout(parent),
-			BoxConfig(move(plain)) {
+			edge_labels_(edge_labels),
+			board_(edge_labels[BoxConfig::LEFT_EDGE].size(),
+					vector<bool>(edge_labels[BoxConfig::TOP_EDGE].size())),
+			tried_to_solve_(false),
+			solution_(nullptr) {
+	solution_ = make_shared<BoxConfig>(num_boxes, move(edge_labels));
+
 	// Place the edge labels
 	for(vector<char>::size_type edge = 0; edge < edge_labels_.size(); ++edge)
 		for(unsigned index = 0; index < edge_labels_[edge].size(); ++index) {
 			QLabel *label = new QLabel(QString(
-					represent_label(edge_labels_[edge][index]).c_str()));
+					BoxConfig::represent_label(edge_labels_[edge][index]).
+							c_str()));
 			if(edge % 2)
 				addWidget(label, index + 1,
-						edge == LEFT_EDGE ? 0 : board_[0].size() + 1);
+						edge == BoxConfig::LEFT_EDGE ? 0 : board_[0].size() + 1)
+								;
 			else
-				addWidget(label, edge == TOP_EDGE ? 0 : board_.size() + 1,
-						index + 1);
+				addWidget(label, edge ==
+						BoxConfig::TOP_EDGE ? 0 : board_.size() + 1, index + 1);
 		}
 
 	// Place the "black box" devices
 	for(vector<bool>::size_type r = 0; r < board_.size(); ++r)
 		for(vector<bool>::size_type c = 0; c < board_[r].size(); ++c) {
 			QCheckBox *blackbox = new QCheckBox();
-			if(is_nonempty() && board_[r][c])
+			if(board_[r][c])
 				blackbox->setCheckState(Qt::Checked);
 			addWidget(blackbox, r + 1, c + 1);
 		}
+}
+
+bool BoxPuzzle::is_on_the_right_track() const {
+	if(!tried_to_solve_)
+		solution_ = dynamic_pointer_cast<BoxConfig>(solver(solution_));
+	if(!solution_)
+		return false;
+
+	// Ensure they haven't done anything the solution doesn't
+	// TODO This approach doesn't work for boards with multiple solutions
+	for(vector<vector<bool>>::size_type r = 0; r < board_.size(); ++r)
+		for(vector<bool>::size_type c = 0; c < board_[r].size(); ++c)
+			if(this->board_[r][c] && !solution_->board(r)[c])
+				return false;
+
+	return true;
 }
