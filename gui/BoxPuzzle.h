@@ -52,15 +52,22 @@ private:
 	std::forward_list<QWidget *> visible_;
 
 public:
+	// Read a board in from the specified file and return the result
+	// Kicks back a nullptr if the file was invalid!
 	static std::shared_ptr<BoxPuzzle> createFromFile(const char *filename,
 			BoxWindow *parent);
 
+	// Delete the GUI elements so that they disappear from view
 	~BoxPuzzle();
 
+	// Whether the puzzle is solveable
 	bool has_solution() const;
 
+	// Whether the user hasn't made any incorrect moves
 	bool is_on_the_right_track() const;
 
+	// Advance the puzzle toward victory, first by removing an incorrect
+	// placement, and if that doesn't work, by adding an ideal one
 	bool advance_game();
 
 private:
@@ -68,17 +75,24 @@ private:
 			std::vector<std::vector<char>> &&edge_labels,
 			BoxWindow *parent);
 
+	// Called whenever a checkbox is changed
 	void board_was_updated(int new_state);
 
+	// Disable all unticked checkboxes
 	void lock_unselected_locations();
 
+	// Reenable all checkboxes
 	void unlock_every_location();
 
+	// Find the first coordinate that meets the given criterion
+	// Returns the board sizes (a.k.a. NOTHING_TO_SEE_HERE_) if no match.
 	std::tuple<rindex_t, cindex_t> first_distinguishing_coordinate(
 			bool (BoxPuzzle::*decider)(rindex_t, cindex_t) const) const;
 
+	// Criterion for a move that contradicts the path to a solution
 	bool invalid_placement(rindex_t row, cindex_t col) const;
 
+	// Criterion for a move that must be made to reach a solution
 	bool missing_placement(rindex_t row, cindex_t col) const;
 };
 
