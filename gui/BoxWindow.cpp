@@ -10,9 +10,11 @@ BoxWindow::BoxWindow(QWidget *parent) :
 			QMainWindow(parent),
 			outer(new QVBoxLayout()),
 			load(new QPushButton("&Load board")),
+			reset(new QPushButton("&Reset game")),
 			validate(new QPushButton("&Validate moves")),
 			hint(new QPushButton("Get &hint")) {
 	setWindowTitle("Sol Boucher's Black Box implementation");
+	reset->setEnabled(false);
 	validate->setEnabled(false);
 	hint->setEnabled(false);
 
@@ -20,9 +22,11 @@ BoxWindow::BoxWindow(QWidget *parent) :
 
 	QHBoxLayout *buttons = new QHBoxLayout();
 	connect(load, &QPushButton::clicked, this, &BoxWindow::loadBoard);
+	connect(reset, &QPushButton::clicked, this, &BoxWindow::resetGame);
 	connect(validate, &QPushButton::clicked, this, &BoxWindow::validateMoves);
 	connect(hint, &QPushButton::clicked, this, &BoxWindow::requestHint);
 	buttons->addWidget(load);
+	buttons->addWidget(reset);
 	buttons->addWidget(validate);
 	buttons->addWidget(hint);
 	outer->addLayout(buttons);
@@ -33,6 +37,7 @@ BoxWindow::BoxWindow(QWidget *parent) :
 }
 
 void BoxWindow::enable_all_buttons() {
+	reset->setEnabled(true);
 	validate->setEnabled(true);
 	hint->setEnabled(true);
 }
@@ -56,6 +61,10 @@ void BoxWindow::loadBoard() {
 		outer->addLayout(board.get());
 		enable_all_buttons();
 	}
+}
+
+void BoxWindow::resetGame() {
+	board->restart_game();
 }
 
 void BoxWindow::validateMoves() const {

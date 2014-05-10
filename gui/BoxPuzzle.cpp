@@ -120,6 +120,15 @@ bool BoxPuzzle::has_solution() const {
 	return (bool)solution_;
 }
 
+void BoxPuzzle::restart_game() {
+	for(vector<QCheckBox *> row : board_)
+		for_each(row.begin(), row.end(), [] (QCheckBox *box) {
+				box->setEnabled(true);
+				if(box->isChecked())
+					box->setCheckState(Qt::Unchecked);
+			});
+}
+
 bool BoxPuzzle::is_on_the_right_track() const {
 	if(!has_solution())
 		return false;

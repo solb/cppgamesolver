@@ -24,6 +24,9 @@ private:
 	// Button to load a puzzle from a file
 	QPushButton *load;
 
+	// Button to clear the board and restart the puzzle
+	QPushButton *reset;
+
 	// Button to validate the puzzle for legal moves
 	QPushButton *validate;
 
@@ -46,6 +49,9 @@ public:
 private:
 	// Called when the load button is pressed
 	void loadBoard();
+
+	// Called when the reset button is pressed
+	void resetGame();
 
 	// Called when the validate button is pressed
 	void validateMoves() const;

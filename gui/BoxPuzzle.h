@@ -63,6 +63,9 @@ public:
 	// Whether the puzzle is solveable
 	bool has_solution() const;
 
+	// Begin again with a blank board
+	void restart_game();
+
 	// Whether the user hasn't made any incorrect moves
 	bool is_on_the_right_track() const;
 
