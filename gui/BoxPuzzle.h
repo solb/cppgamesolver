@@ -97,6 +97,10 @@ private:
 
 	// Criterion for a move that must be made to reach a solution
 	bool missing_placement(rindex_t row, cindex_t col) const;
+
+	// Disable copy and assign
+	BoxPuzzle(const BoxPuzzle &) = delete;
+	BoxPuzzle &operator=(const BoxPuzzle &) = delete;
 };
 
 #endif

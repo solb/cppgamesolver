@@ -39,6 +39,15 @@ BoxWindow::BoxWindow(QWidget *parent) :
 	show();
 }
 
+BoxWindow::~BoxWindow() {
+	delete outer;
+	delete load;
+	delete reset;
+	delete validate;
+	delete hint;
+	delete rules;
+}
+
 void BoxWindow::enable_all_buttons() {
 	reset->setEnabled(true);
 	validate->setEnabled(true);

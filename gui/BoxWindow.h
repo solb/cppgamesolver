@@ -43,6 +43,8 @@ public:
 	// Make and display the window
 	explicit BoxWindow(QWidget *parent = nullptr);
 
+	~BoxWindow();
+
 	// Light up all the control buttons at the top of the screen
 	void enable_all_buttons();
 
