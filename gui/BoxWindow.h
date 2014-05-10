@@ -33,6 +33,9 @@ private:
 	// Button to advance the puzzle toward a correct solution
 	QPushButton *hint;
 
+	// Button for instructions
+	QPushButton *rules;
+
 	// The current game board
 	std::shared_ptr<BoxPuzzle> board;
 
@@ -58,6 +61,9 @@ private:
 
 	// Called when the hint button is pressed
 	void requestHint();
+
+	// Shows some help
+	void displayRules();
 
 	// Disable copy and assign
 	BoxWindow(const BoxWindow &) = delete;
