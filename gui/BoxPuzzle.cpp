@@ -121,7 +121,7 @@ BoxPuzzle::~BoxPuzzle() {
 
 bool BoxPuzzle::has_solution() const {
 	if(!tried_to_solve_) {
-		update_config_from_checks();
+		path_->clear();
 		solution_ = dynamic_pointer_cast<BoxConfig>(solver(config_, path_));
 		tried_to_solve_ = true;
 	}
@@ -135,7 +135,6 @@ void BoxPuzzle::restart_game() {
 				if(box->isChecked())
 					box->setCheckState(Qt::Unchecked);
 			});
-	update_config_from_checks();
 
 	tried_to_solve_ = false;
 	path_->clear();
@@ -163,7 +162,7 @@ bool BoxPuzzle::advance_game() {
 	else
 		config_ = solution_;
 
-	update_checks_from_config();
+	update_checks_from_config(); // Update display
 
 	return true;
 }
@@ -172,7 +171,7 @@ void BoxPuzzle::board_was_updated(int new_state) {
 	if(new_state == Qt::Checked) {
 		if(++placed_devices_ == num_devices_) {
 			lock_unselected_locations();
-			update_config_from_checks();
+			update_config_from_checks(); // Allow victory detection
 			if(config_->is_goal()) {
 				parent_->disable_advancing_buttons();
 				QMessageBox::information(nullptr, "Congratulations",
@@ -198,6 +197,7 @@ void BoxPuzzle::update_config_from_checks() const {
 				[] (QCheckBox *box) { return box->isChecked(); });
 	}
 	config_->set_board(boolboard);
+	tried_to_solve_ = false;
 }
 
 void BoxPuzzle::update_checks_from_config() {
@@ -208,7 +208,6 @@ void BoxPuzzle::update_checks_from_config() {
 						Qt::Unchecked : Qt::Checked);
 				board_[r][c]->setEnabled(true);
 			}
-	lock_unselected_locations();
 }
 
 void BoxPuzzle::lock_unselected_locations() {
