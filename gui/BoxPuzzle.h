@@ -40,6 +40,12 @@ private:
 	mutable bool tried_to_solve_;
 
 	// Our current backing state for use with the solver
+	std::shared_ptr<BoxConfig> config_;
+
+	// The current path to a reachable solution, if any exists
+	mutable std::shared_ptr<std::forward_list<std::shared_ptr<Configuration>>> path_;
+
+	// The first reachable solution, if one exists
 	mutable std::shared_ptr<BoxConfig> solution_;
 
 	// Value indicating no distinguishing point was found
@@ -80,6 +86,9 @@ private:
 
 	// Called whenever a checkbox is changed
 	void board_was_updated(int new_state);
+
+	// Update checkbox states from config_
+	void update_checks_from_config();
 
 	// Disable all unticked checkboxes
 	void lock_unselected_locations();

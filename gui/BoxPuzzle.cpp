@@ -7,6 +7,7 @@
 #include "BoxPuzzle.h"
 #include "BoxWindow.h"
 #include "../solver.h"
+#include <forward_list>
 #include <fstream>
 #include <QChar>
 #include <QCheckBox>
@@ -19,6 +20,7 @@
 
 using Qt::CheckState;
 using std::dynamic_pointer_cast;
+using std::forward_list;
 using std::get;
 using std::ifstream;
 using std::make_shared;
@@ -76,11 +78,13 @@ BoxPuzzle::BoxPuzzle(unsigned num_devices, vector<vector<char>> &&edge_labels,
 					vector<QCheckBox *>
 							(edge_labels[BoxConfig::TOP_EDGE].size())),
 			tried_to_solve_(false),
+			config_(nullptr),
+			path_(make_shared<forward_list<shared_ptr<Configuration>>>()),
 			solution_(nullptr),
 			NOTHING_TO_SEE_HERE_(board_.size(), board_[0].size()),
 			parent_(parent),
 			visible_() {
-	solution_ = make_shared<BoxConfig>(num_devices, move(edge_labels));
+	config_ = make_shared<BoxConfig>(num_devices, move(edge_labels));
 
 	// Place the edge labels
 	for(vector<char>::size_type edge = 0; edge < edge_labels_.size(); ++edge)
@@ -115,8 +119,10 @@ BoxPuzzle::~BoxPuzzle() {
 }
 
 bool BoxPuzzle::has_solution() const {
-	if(!tried_to_solve_)
-		solution_ = dynamic_pointer_cast<BoxConfig>(solver(solution_));
+	if(!tried_to_solve_) {
+		solution_ = dynamic_pointer_cast<BoxConfig>(solver(config_, path_));
+		tried_to_solve_ = true;
+	}
 	return (bool)solution_;
 }
 
@@ -137,15 +143,20 @@ bool BoxPuzzle::advance_game() {
 	if(!has_solution())
 		return false;
 
-	tuple<rindex_t, cindex_t> where_to =
-			first_distinguishing_coordinate(&BoxPuzzle::invalid_placement);
-	CheckState new_state = Qt::Unchecked;
-
-	if(where_to == NOTHING_TO_SEE_HERE_) {
-		where_to = first_distinguishing_coordinate(&BoxPuzzle::missing_placement);
-		new_state = Qt::Checked;
+	while(!path_->empty() &&
+			*dynamic_pointer_cast<BoxConfig>(path_->front()) == *config_) {
+		config_ = dynamic_pointer_cast<BoxConfig>(path_->front());
+		path_->pop_front();
 	}
-	board_[get<0>(where_to)][get<1>(where_to)]->setCheckState(new_state);
+
+	if(!path_->empty()) {
+		config_ = dynamic_pointer_cast<BoxConfig>(path_->front());
+		path_->pop_front();
+	}
+	else
+		config_ = solution_;
+
+	update_checks_from_config();
 
 	return true;
 }
@@ -169,6 +180,14 @@ void BoxPuzzle::board_was_updated(int new_state) {
 			parent_->enable_all_buttons();
 		}
 	}
+}
+
+void BoxPuzzle::update_checks_from_config() {
+	for(rindex_t r = 0; r < board_.size(); ++r)
+		for(cindex_t c = 0; c < board_.size(); ++c)
+			if(board_[r][c]->isChecked() != config_->board(r)[c])
+				board_[r][c]->setChecked(board_[r][c]->isChecked() ?
+						Qt::Unchecked : Qt::Checked);
 }
 
 void BoxPuzzle::lock_unselected_locations() {
