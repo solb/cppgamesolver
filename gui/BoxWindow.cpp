@@ -81,7 +81,8 @@ void BoxWindow::resetGame() {
 
 void BoxWindow::validateMoves() const {
 	QMessageBox::information(nullptr, "Move validation",
-			board->is_on_the_right_track() ? "VALID" : "INVALID");
+			board->is_on_the_right_track() ?
+					"VALID" : "INVALID: You must place all the devices.");
 }
 
 void BoxWindow::requestHint() {

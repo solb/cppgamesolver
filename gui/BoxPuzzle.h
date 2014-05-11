@@ -39,7 +39,7 @@ private:
 	// Whether we've tried to solve the puzzle yet
 	mutable bool tried_to_solve_;
 
-	// Our starting configuration, or solution once we've solved it
+	// Our current backing state for use with the solver
 	mutable std::shared_ptr<BoxConfig> solution_;
 
 	// Value indicating no distinguishing point was found
@@ -66,7 +66,7 @@ public:
 	// Begin again with a blank board
 	void restart_game();
 
-	// Whether the user hasn't made any incorrect moves
+	// Whether the currently-input configuration can be fed into the backtracker
 	bool is_on_the_right_track() const;
 
 	// Advance the puzzle toward victory, first by removing an incorrect

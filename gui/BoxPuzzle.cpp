@@ -130,14 +130,7 @@ void BoxPuzzle::restart_game() {
 }
 
 bool BoxPuzzle::is_on_the_right_track() const {
-	if(!has_solution())
-		return false;
-
-	// Ensure they haven't done anything the solution doesn't
-	// TODO This approach doesn't work for boards with multiple solutions
-	return first_distinguishing_coordinate(&BoxPuzzle::invalid_placement) == NOTHING_TO_SEE_HERE_;
-
-	return true;
+	return placed_devices_ == num_devices_;
 }
 
 bool BoxPuzzle::advance_game() {
