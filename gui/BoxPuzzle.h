@@ -36,11 +36,11 @@ private:
 	// Our board (analagous to BoxConfig::edge_labels_)
 	std::vector<std::vector<QCheckBox *>> board_;
 
-	// Whether we've tried to solve the puzzle yet
+	// Whether we've tried to solve the puzzle since the user's input chaged
 	mutable bool tried_to_solve_;
 
 	// Our current backing state for use with the solver
-	std::shared_ptr<BoxConfig> config_;
+	mutable std::shared_ptr<BoxConfig> config_;
 
 	// The current path to a reachable solution, if any exists
 	mutable std::shared_ptr<std::forward_list<std::shared_ptr<Configuration>>> path_;
@@ -86,6 +86,9 @@ private:
 
 	// Called whenever a checkbox is changed
 	void board_was_updated(int new_state);
+
+	// Update config_ from checkbox states
+	void update_config_from_checks() const;
 
 	// Update checkbox states from config_
 	void update_checks_from_config();

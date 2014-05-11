@@ -26,6 +26,7 @@ using std::ifstream;
 using std::make_shared;
 using std::move;
 using std::shared_ptr;
+using std::transform;
 using std::tuple;
 using std::vector;
 
@@ -120,6 +121,7 @@ BoxPuzzle::~BoxPuzzle() {
 
 bool BoxPuzzle::has_solution() const {
 	if(!tried_to_solve_) {
+		update_config_from_checks();
 		solution_ = dynamic_pointer_cast<BoxConfig>(solver(config_, path_));
 		tried_to_solve_ = true;
 	}
@@ -182,12 +184,24 @@ void BoxPuzzle::board_was_updated(int new_state) {
 	}
 }
 
+void BoxPuzzle::update_config_from_checks() const {
+	vector<vector<bool>> boolboard;
+	for(vector<QCheckBox *> row : board_) {
+		boolboard.push_back(vector<bool>());
+		transform(row.begin(), row.end(), back_inserter(boolboard.back()),
+				[] (QCheckBox *box) { return box->isChecked(); });
+	}
+}
+
 void BoxPuzzle::update_checks_from_config() {
 	for(rindex_t r = 0; r < board_.size(); ++r)
 		for(cindex_t c = 0; c < board_.size(); ++c)
-			if(board_[r][c]->isChecked() != config_->board(r)[c])
+			if(board_[r][c]->isChecked() != config_->board(r)[c]) {
 				board_[r][c]->setChecked(board_[r][c]->isChecked() ?
 						Qt::Unchecked : Qt::Checked);
+				board_[r][c]->setEnabled(true);
+			}
+	lock_unselected_locations();
 }
 
 void BoxPuzzle::lock_unselected_locations() {
