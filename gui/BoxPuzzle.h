@@ -48,9 +48,6 @@ private:
 	// The first reachable solution, if one exists
 	mutable std::shared_ptr<BoxConfig> solution_;
 
-	// Value indicating no distinguishing point was found
-	const std::tuple<rindex_t, cindex_t> NOTHING_TO_SEE_HERE_;
-
 	// Our containing window
 	BoxWindow *parent_;
 

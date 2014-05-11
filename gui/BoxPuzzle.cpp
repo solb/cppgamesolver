@@ -82,7 +82,6 @@ BoxPuzzle::BoxPuzzle(unsigned num_devices, vector<vector<char>> &&edge_labels,
 			config_(nullptr),
 			path_(make_shared<forward_list<shared_ptr<Configuration>>>()),
 			solution_(nullptr),
-			NOTHING_TO_SEE_HERE_(board_.size(), board_[0].size()),
 			parent_(parent),
 			visible_() {
 	config_ = make_shared<BoxConfig>(num_devices, move(edge_labels));
