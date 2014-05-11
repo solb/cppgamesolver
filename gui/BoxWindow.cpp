@@ -89,7 +89,12 @@ void BoxWindow::validateMoves() const {
 void BoxWindow::requestHint() {
 	if(!board->advance_game())
 		QErrorMessage::qtHandler()->showMessage(
-				"The current puzzle has no solution!");
+				"The current puzzle has no solution!\nHINT: The solver works "
+				"from the upper-left corner, so the only board layout that "
+				"doesn't exclude a single possible configuration is to line up"
+				"all the devices consecutively starting in the lower-left and "
+				"proceeding with a row-major flow (a.k.a. horizontally).  Of "
+				"course, this configuration is also the slowest way to start.");
 }
 
 void BoxWindow::displayRules() {

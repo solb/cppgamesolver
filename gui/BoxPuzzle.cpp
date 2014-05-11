@@ -78,6 +78,7 @@ BoxPuzzle::BoxPuzzle(unsigned num_devices, vector<vector<char>> &&edge_labels,
 			board_(edge_labels[BoxConfig::LEFT_EDGE].size(),
 					vector<QCheckBox *>
 							(edge_labels[BoxConfig::TOP_EDGE].size())),
+			remaining_(new QLabel()),
 			tried_to_solve_(false),
 			config_(nullptr),
 			path_(make_shared<forward_list<shared_ptr<Configuration>>>()),
@@ -111,6 +112,14 @@ BoxPuzzle::BoxPuzzle(unsigned num_devices, vector<vector<char>> &&edge_labels,
 					&BoxPuzzle::board_was_updated);
 			addWidget(board_[r][c], r + 1, c + 1);
 		}
+
+	// Place labels detailing the number of devices left to place
+	QLabel *desc = new QLabel(QString("Left to place:"));
+	visible_.push_front(desc);
+	addWidget(desc, 0, board_[0].size() + 1);
+	remaining_->setText(QString::number(num_devices_));
+	visible_.push_front(remaining_);
+	addWidget(remaining_, 0, board_[0].size() + 2);
 }
 
 BoxPuzzle::~BoxPuzzle() {
@@ -186,6 +195,7 @@ void BoxPuzzle::board_was_updated(int new_state) {
 			parent_->enable_all_buttons(false);
 		}
 	}
+	remaining_->setText(QString::number(num_devices_ - placed_devices_));
 }
 
 void BoxPuzzle::update_config_from_checks() const {

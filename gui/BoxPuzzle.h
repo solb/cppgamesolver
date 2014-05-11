@@ -15,6 +15,7 @@
 
 class BoxWindow;
 class QCheckBox;
+class QLabel;
 class QWidget;
 
 typedef std::vector<std::vector<QCheckBox *>>::size_type rindex_t;
@@ -35,6 +36,9 @@ private:
 
 	// Our board (analagous to BoxConfig::edge_labels_)
 	std::vector<std::vector<QCheckBox *>> board_;
+
+	// Used to output the number of devices remaining to place
+	QLabel *remaining_;
 
 	// Whether we've tried to solve the puzzle since the user's input chaged
 	mutable bool tried_to_solve_;
