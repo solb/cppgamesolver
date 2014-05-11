@@ -76,9 +76,12 @@ public:
 	// Whether the currently-input configuration can be fed into the backtracker
 	bool is_on_the_right_track() const;
 
-	// Advance the puzzle toward victory, first by removing an incorrect
-	// placement, and if that doesn't work, by adding an ideal one
+	// Advance the puzzle toward victory by moving to the next different-looking
+	// configuration along the path to the solution provided by the solver
 	bool advance_game();
+
+	// Jump the puzzle directly to victory, if the solver is able to find one
+	bool fast_track_to_victory();
 
 private:
 	BoxPuzzle(unsigned num_devices,

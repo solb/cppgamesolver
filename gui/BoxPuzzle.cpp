@@ -171,7 +171,15 @@ bool BoxPuzzle::advance_game() {
 		config_ = solution_;
 
 	update_checks_from_config(); // Update display
+	return true;
+}
 
+bool BoxPuzzle::fast_track_to_victory() {
+	if(!has_solution())
+		return false;
+
+	config_ = solution_;
+	update_checks_from_config(); // Update display
 	return true;
 }
 

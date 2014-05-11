@@ -33,6 +33,9 @@ private:
 	// Button to advance the puzzle toward a correct solution
 	QPushButton *hint;
 
+	// Button to immediately switch to the solution and declare victory
+	QPushButton *cheat;
+
 	// Button for instructions
 	QPushButton *rules;
 
@@ -46,7 +49,7 @@ public:
 	~BoxWindow();
 
 	// Light up all the control buttons at the top of the screen
-	// If include_hint is set, this includes the hint button
+	// If include_hint is set, this includes the hint/cheat buttons
 	void enable_all_buttons(bool include_hint);
 
 	// Disable the buttons that are used to advance/change the puzzle state
@@ -64,6 +67,9 @@ private:
 
 	// Called when the hint button is pressed
 	void requestHint();
+
+	// Called when the user is being a cheater
+	void alternativeVictory();
 
 	// Shows some help
 	void displayRules();

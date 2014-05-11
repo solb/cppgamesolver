@@ -13,11 +13,13 @@ BoxWindow::BoxWindow(QWidget *parent) :
 			reset(new QPushButton("&Reset game")),
 			validate(new QPushButton("&Validate moves")),
 			hint(new QPushButton("Get &hint")),
+			cheat(new QPushButton("&Cheat and win")),
 			rules(new QPushButton("Game r&ules")) {
 	setWindowTitle("Sol Boucher's Black Box implementation");
 	reset->setEnabled(false);
 	validate->setEnabled(false);
 	hint->setEnabled(false);
+	cheat->setEnabled(false);
 
 	QWidget *central = new QWidget();
 
@@ -26,11 +28,13 @@ BoxWindow::BoxWindow(QWidget *parent) :
 	connect(reset, &QPushButton::clicked, this, &BoxWindow::resetGame);
 	connect(validate, &QPushButton::clicked, this, &BoxWindow::validateMoves);
 	connect(hint, &QPushButton::clicked, this, &BoxWindow::requestHint);
+	connect(cheat, &QPushButton::clicked, this, &BoxWindow::alternativeVictory);
 	connect(rules, &QPushButton::clicked, this, &BoxWindow::displayRules);
 	buttons->addWidget(load);
 	buttons->addWidget(reset);
 	buttons->addWidget(validate);
 	buttons->addWidget(hint);
+	buttons->addWidget(cheat);
 	buttons->addWidget(rules);
 	outer->addLayout(buttons);
 
@@ -46,6 +50,7 @@ BoxWindow::~BoxWindow() {
 	delete reset;
 	delete validate;
 	delete hint;
+	delete cheat;
 	delete rules;
 }
 
@@ -53,11 +58,13 @@ void BoxWindow::enable_all_buttons(bool include_hint) {
 	reset->setEnabled(true);
 	validate->setEnabled(true);
 	hint->setEnabled(include_hint);
+	cheat->setEnabled(include_hint);
 }
 
 void BoxWindow::disable_advancing_buttons() {
 	validate->setEnabled(false);
 	hint->setEnabled(false);
+	cheat->setEnabled(false);
 }
 
 void BoxWindow::loadBoard() {
@@ -92,9 +99,17 @@ void BoxWindow::requestHint() {
 				"The current puzzle has no solution!\nHINT: The solver works "
 				"from the upper-left corner, so the only board layout that "
 				"doesn't exclude a single possible configuration is to line up"
-				"all the devices consecutively starting in the lower-left and "
+				"all the devices consecutively starting in the upper-left and "
 				"proceeding with a row-major flow (a.k.a. horizontally).  Of "
 				"course, this configuration is also the slowest way to start.");
+}
+
+void BoxWindow::alternativeVictory() {
+	if(!board->fast_track_to_victory())
+		QErrorMessage::qtHandler()->showMessage(
+				"The current puzzle has no solution!  Try placing all your "
+				"pieces horizontally consecutively starting from the "
+				"upper-left corner to maximize the solver's search space.");
 }
 
 void BoxWindow::displayRules() {
