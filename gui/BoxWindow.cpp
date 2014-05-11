@@ -40,6 +40,7 @@ BoxWindow::BoxWindow(QWidget *parent) :
 }
 
 BoxWindow::~BoxWindow() {
+	board.reset();
 	delete outer;
 	delete load;
 	delete reset;
