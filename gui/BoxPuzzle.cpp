@@ -71,7 +71,7 @@ shared_ptr<BoxPuzzle> BoxPuzzle::createFromFile(const char *filename,
 
 BoxPuzzle::BoxPuzzle(unsigned num_devices, vector<vector<char>> &&edge_labels,
 		BoxWindow *parent) :
-			QGridLayout(parent),
+			QGridLayout(),
 			num_devices_(num_devices),
 			placed_devices_(0),
 			edge_labels_(edge_labels),
