@@ -115,8 +115,11 @@ const vector<bool> &BoxConfig::board(vector<bool>::size_type row) const {
 }
 
 bool BoxConfig::operator==(const BoxConfig &another) const {
-	return another.num_devices_ == this->num_devices_ &&
-			first_modified_device(another.board_) == num_devices_;
+	for(vector<vector<bool>>::size_type r = 0; r < board_.size(); ++r)
+		for(vector<bool>::size_type c = 0; c < board_[r].size(); ++c)
+			if(this->board_[r][c] != another.board_[r][c])
+				return false;
+	return true;
 }
 
 BoxConfig::operator const string &() const {
