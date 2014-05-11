@@ -135,6 +135,11 @@ void BoxPuzzle::restart_game() {
 				if(box->isChecked())
 					box->setCheckState(Qt::Unchecked);
 			});
+	update_config_from_checks();
+
+	tried_to_solve_ = false;
+	path_->clear();
+	solution_.reset();
 }
 
 bool BoxPuzzle::is_on_the_right_track() const {
@@ -167,19 +172,20 @@ void BoxPuzzle::board_was_updated(int new_state) {
 	if(new_state == Qt::Checked) {
 		if(++placed_devices_ == num_devices_) {
 			lock_unselected_locations();
-			has_solution();
-			if(first_distinguishing_coordinate(&BoxPuzzle::missing_placement)
-					== NOTHING_TO_SEE_HERE_) {
+			update_config_from_checks();
+			if(config_->is_goal()) {
 				parent_->disable_advancing_buttons();
 				QMessageBox::information(nullptr, "Congratulations",
 						"You win!");
-				}
+			}
+			else
+				parent_->enable_all_buttons(true);
 		}
 	}
 	else {
 		if(placed_devices_-- == num_devices_) {
 			unlock_every_location();
-			parent_->enable_all_buttons();
+			parent_->enable_all_buttons(false);
 		}
 	}
 }
@@ -191,6 +197,7 @@ void BoxPuzzle::update_config_from_checks() const {
 		transform(row.begin(), row.end(), back_inserter(boolboard.back()),
 				[] (QCheckBox *box) { return box->isChecked(); });
 	}
+	config_->set_board(boolboard);
 }
 
 void BoxPuzzle::update_checks_from_config() {
@@ -214,22 +221,4 @@ void BoxPuzzle::unlock_every_location() {
 	for(vector<QCheckBox *> row : board_)
 		for_each(row.begin(), row.end(), [] (QCheckBox *box)
 				{ box->setEnabled(true); });
-}
-
-tuple<rindex_t, cindex_t> BoxPuzzle::first_distinguishing_coordinate(
-		bool (BoxPuzzle::*decider)(rindex_t, cindex_t) const) const {
-	for(rindex_t r = 0; r < board_.size(); ++r)
-		for(cindex_t c = 0; c < board_[r].size(); ++c)
-			if((this->*decider)(r, c))
-				return tuple<rindex_t, cindex_t>(r, c);
-
-	return NOTHING_TO_SEE_HERE_;
-}
-
-bool BoxPuzzle::invalid_placement(rindex_t row, cindex_t col) const {
-	return this->board_[row][col]->isChecked() && !solution_->board(row)[col];
-}
-
-bool BoxPuzzle::missing_placement(rindex_t row, cindex_t col) const {
-	return solution_->board(row)[col] && !this->board_[row][col]->isChecked();
 }

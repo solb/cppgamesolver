@@ -99,17 +99,6 @@ private:
 	// Reenable all checkboxes
 	void unlock_every_location();
 
-	// Find the first coordinate that meets the given criterion
-	// Returns the board sizes (a.k.a. NOTHING_TO_SEE_HERE_) if no match.
-	std::tuple<rindex_t, cindex_t> first_distinguishing_coordinate(
-			bool (BoxPuzzle::*decider)(rindex_t, cindex_t) const) const;
-
-	// Criterion for a move that contradicts the path to a solution
-	bool invalid_placement(rindex_t row, cindex_t col) const;
-
-	// Criterion for a move that must be made to reach a solution
-	bool missing_placement(rindex_t row, cindex_t col) const;
-
 	// Disable copy and assign
 	BoxPuzzle(const BoxPuzzle &) = delete;
 	BoxPuzzle &operator=(const BoxPuzzle &) = delete;

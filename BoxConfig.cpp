@@ -274,7 +274,7 @@ unsigned BoxConfig::first_modified_device(
 			else if(candidate[r][c] && board_[r][c])
 				++index;
 		}
-	return index;
+	return nth_device_;
 }
 
 string BoxConfig::represent_label(char label) {

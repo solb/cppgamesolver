@@ -48,10 +48,10 @@ BoxWindow::~BoxWindow() {
 	delete rules;
 }
 
-void BoxWindow::enable_all_buttons() {
+void BoxWindow::enable_all_buttons(bool include_hint) {
 	reset->setEnabled(true);
 	validate->setEnabled(true);
-	hint->setEnabled(true);
+	hint->setEnabled(include_hint);
 }
 
 void BoxWindow::disable_advancing_buttons() {
@@ -71,7 +71,7 @@ void BoxWindow::loadBoard() {
 			resize(0, 0);
 		}
 		outer->addLayout(board.get());
-		enable_all_buttons();
+		enable_all_buttons(false);
 	}
 }
 

@@ -46,7 +46,8 @@ public:
 	~BoxWindow();
 
 	// Light up all the control buttons at the top of the screen
-	void enable_all_buttons();
+	// If include_hint is set, this includes the hint button
+	void enable_all_buttons(bool include_hint);
 
 	// Disable the buttons that are used to advance/change the puzzle state
 	void disable_advancing_buttons();
