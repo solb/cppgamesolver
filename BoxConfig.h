@@ -106,12 +106,6 @@ class BoxConfig : public Configuration {
 		static void rotate_deltas(std::vector<std::vector<bool>>::size_type &dr,
 				std::vector<std::vector<bool>>::size_type &dc, bool ccw);
 
-		// Finds the index of the first device to whose placement we won't have
-		// committed, which is often the first whose location changed between
-		// the current board and the supplied candidate board
-		unsigned first_modified_device(
-				const std::vector<std::vector<bool>> &candidate) const;
-
 	public:
 		// Returns a string representation of an edge label, which is a
 		// character if the label is a sentinel value, and numeric otherwise

@@ -106,8 +106,8 @@ const vector<char> &BoxConfig::edge_labels(vector<char>::size_type edge) const {
 }
 
 void BoxConfig::set_board(const vector<vector<bool>> &board) {
-	nth_device_ = first_modified_device(board);
 	board_ = board;
+	nth_device_ = 0;
 }
 
 const vector<bool> &BoxConfig::board(vector<bool>::size_type row) const {
@@ -265,19 +265,6 @@ void BoxConfig::rotate_deltas(vector<vector<bool>>::size_type &dr,
 		dc = -dc;
 	}
 	swap(dr, dc);
-}
-
-unsigned BoxConfig::first_modified_device(
-		const vector<vector<bool>> &candidate) const {
-	unsigned index = 0;
-	for(vector<vector<bool>>::size_type r = 0; r < board_.size(); ++r)
-		for(vector<bool>::size_type c = 0; c < board_[r].size(); ++c) {
-			if(candidate[r][c] != board_[r][c])
-				return min(index, nth_device_);
-			else if(candidate[r][c] && board_[r][c])
-				++index;
-		}
-	return nth_device_;
 }
 
 string BoxConfig::represent_label(char label) {
