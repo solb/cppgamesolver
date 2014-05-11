@@ -65,6 +65,12 @@ class BoxConfig : public Configuration {
 		const std::vector<char> &edge_labels(std::vector<char>::size_type edge)
 				const;
 
+		// Setter for an entirely new board_
+		// Precondition: The new board must have exactly num_devices_ devices
+		// Postcondition: The configuration will start backtracking from the
+		// 					very first black box device on the board
+		void set_board(const std::vector<std::vector<bool>> &board);
+
 		// Getter for read-only access to board_[row]
 		const std::vector<bool> &board(std::vector<bool>::size_type row) const;
 

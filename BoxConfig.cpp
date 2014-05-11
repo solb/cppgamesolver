@@ -104,6 +104,11 @@ const vector<char> &BoxConfig::edge_labels(vector<char>::size_type edge) const {
 	return edge_labels_[edge];
 }
 
+void BoxConfig::set_board(const vector<vector<bool>> &board) {
+	board_ = board;
+	nth_device_ = 0;
+}
+
 const vector<bool> &BoxConfig::board(vector<bool>::size_type row) const {
 	return board_[row];
 }
