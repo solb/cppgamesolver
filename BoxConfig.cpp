@@ -4,6 +4,7 @@
 
 #include "BoxConfig.h"
 #include <algorithm>
+using std::min;
 using std::shared_ptr;
 using std::string;
 using std::swap;
@@ -105,12 +106,17 @@ const vector<char> &BoxConfig::edge_labels(vector<char>::size_type edge) const {
 }
 
 void BoxConfig::set_board(const vector<vector<bool>> &board) {
+	nth_device_ = first_modified_device(board);
 	board_ = board;
-	nth_device_ = 0;
 }
 
 const vector<bool> &BoxConfig::board(vector<bool>::size_type row) const {
 	return board_[row];
+}
+
+bool BoxConfig::operator==(const BoxConfig &another) const {
+	return another.num_devices_ == this->num_devices_ &&
+			first_modified_device(another.board_) == num_devices_;
 }
 
 BoxConfig::operator const string &() const {
@@ -256,6 +262,19 @@ void BoxConfig::rotate_deltas(vector<vector<bool>>::size_type &dr,
 		dc = -dc;
 	}
 	swap(dr, dc);
+}
+
+unsigned BoxConfig::first_modified_device(
+		const vector<vector<bool>> &candidate) const {
+	unsigned index = 0;
+	for(vector<vector<bool>>::size_type r = 0; r < board_.size(); ++r)
+		for(vector<bool>::size_type c = 0; c < board_[r].size(); ++c) {
+			if(candidate[r][c] != board_[r][c])
+				return min(index, nth_device_);
+			else if(candidate[r][c] && board_[r][c])
+				++index;
+		}
+	return index;
 }
 
 string BoxConfig::represent_label(char label) {

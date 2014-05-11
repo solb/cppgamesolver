@@ -66,13 +66,17 @@ class BoxConfig : public Configuration {
 				const;
 
 		// Setter for an entirely new board_
-		// Precondition: The new board must have exactly num_devices_ devices
+		// Precondition: The new board must be the same size as the old one and
+		// 					have exactly num_devices_ devices preplaced on it
 		// Postcondition: The configuration will start backtracking from the
 		// 					very first black box device on the board
 		void set_board(const std::vector<std::vector<bool>> &board);
 
 		// Getter for read-only access to board_[row]
 		const std::vector<bool> &board(std::vector<bool>::size_type row) const;
+
+		// Checks whether the configurations' devices are placed identically
+		bool operator==(const BoxConfig &another) const;
 
 		operator const std::string &() const;
 
@@ -101,6 +105,12 @@ class BoxConfig : public Configuration {
 		// Manipulate row/column deltas to reflect a CW or CCW rotation
 		static void rotate_deltas(std::vector<std::vector<bool>>::size_type &dr,
 				std::vector<std::vector<bool>>::size_type &dc, bool ccw);
+
+		// Finds the index of the first device to whose placement we won't have
+		// committed, which is often the first whose location changed between
+		// the current board and the supplied candidate board
+		unsigned first_modified_device(
+				const std::vector<std::vector<bool>> &candidate) const;
 
 	public:
 		// Returns a string representation of an edge label, which is a
